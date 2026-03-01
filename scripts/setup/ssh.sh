@@ -269,14 +269,20 @@ cmd_test() {
 
   for i in "${!USERNAMES[@]}"; do
     local user="${USERNAMES[$i]}"
-    local alias="${HOST_ALIASES[$i]:-github-$user}"
+    local key="${KEY_PATHS[$i]:-$SSH_DIR/id_ed25519_$user}"
     printf '  Testing %-22s' "@${user}..."
+    if [[ ! -f "$key" ]]; then
+      printf '%b\n' "${YELLOW}⚠ key missing: $(basename "$key")${RESET}"
+      continue
+    fi
     local result
-    result=$(ssh -T -o BatchMode=yes -o ConnectTimeout=5 "git@${alias}" 2>&1 || true)
+    result=$(ssh -T -i "$key" -o BatchMode=yes -o ConnectTimeout=5 \
+      -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
+      git@github.com 2>&1 || true)
     if echo "$result" | grep -q "successfully authenticated"; then
       printf '%b\n' "${GREEN}✓ connected${RESET}"
     else
-      printf '%b\n' "${RED}✗ failed${RESET}"
+      printf '%b\n' "${RED}✗ failed — ${result}${RESET}"
     fi
   done
   echo ""
