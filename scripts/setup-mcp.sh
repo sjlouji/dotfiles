@@ -87,10 +87,9 @@ CLAUDE_DESKTOP_CONFIG="$CLAUDE_DESKTOP_DIR/claude_desktop_config.json"
 mkdir -p "$CLAUDE_DESKTOP_DIR"
 
 if [[ ! -f "$CLAUDE_DESKTOP_CONFIG" ]]; then
-  # Expand env vars from mcp.env into the config
-  eval "cat <<'MCPEOF'
-$(cat "$MCP_CONFIG_SRC")
-MCPEOF" > "$CLAUDE_DESKTOP_CONFIG" 2>/dev/null || cp "$MCP_CONFIG_SRC" "$CLAUDE_DESKTOP_CONFIG"
+  # Copy config as-is; Claude Desktop resolves ${VAR} from the environment at runtime.
+  # In the normal setup flow symlink.sh handles this instead (mcp.json → claude_desktop_config.json).
+  cp "$MCP_CONFIG_SRC" "$CLAUDE_DESKTOP_CONFIG"
   success "Claude Desktop config written → $CLAUDE_DESKTOP_CONFIG"
 else
   warn "Claude Desktop config already exists — skipping (edit manually if needed)"

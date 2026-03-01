@@ -92,6 +92,11 @@ if [[ -d "$DOTFILES_DIR/scripts" ]]; then
   find "$DOTFILES_DIR/scripts" -type f -name "*.sh" -exec chmod +x {} \;
 fi
 
+# ── Make all macos/ scripts executable ────────────────────────────────────────
+if [[ -d "$DOTFILES_DIR/macos" ]]; then
+  find "$DOTFILES_DIR/macos" -type f -name "*.sh" -exec chmod +x {} \;
+fi
+
 # ── Make all sync/ scripts executable ─────────────────────────────────────────
 if [[ -d "$DOTFILES_DIR/sync" ]]; then
   find "$DOTFILES_DIR/sync" -type f -exec chmod +x {} \;

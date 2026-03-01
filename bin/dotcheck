@@ -13,9 +13,9 @@ BLUE='\033[0;34m'; BOLD='\033[1m'; DIM='\033[2m'; RESET='\033[0m'
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
 PASS=0; WARN=0; FAIL=0
 
-ok()   { echo -e "  ${GREEN}✓${RESET}  $*"; ((PASS++)); }
-warn() { echo -e "  ${YELLOW}⚠${RESET}  $*"; ((WARN++)); }
-fail() { echo -e "  ${RED}✗${RESET}  $*"; ((FAIL++)); }
+ok()   { echo -e "  ${GREEN}✓${RESET}  $*"; PASS=$((PASS + 1)); }
+warn() { echo -e "  ${YELLOW}⚠${RESET}  $*"; WARN=$((WARN + 1)); }
+fail() { echo -e "  ${RED}✗${RESET}  $*"; FAIL=$((FAIL + 1)); }
 section() { echo -e "\n${BOLD}${BLUE}── $* ──────────────────────────────────────${RESET}"; }
 
 echo -e "\n${BOLD}dotcheck — Setup audit${RESET} ${DIM}(~/.dotfiles)${RESET}\n"
@@ -104,38 +104,45 @@ GIT_EMAIL=$(git config --global user.email 2>/dev/null || echo "")
 if [[ -n "$GIT_NAME" && -n "$GIT_EMAIL" ]]; then
   ok "Global git identity: $GIT_NAME <$GIT_EMAIL>"
 else
-  warn "No global git identity — create ~/.dotfiles/.local/.gitconfig-personal or .gitconfig-work"
+  warn "No global git identity — run: bootstrap.sh git"
 fi
 
-[[ -f "$DOTFILES_DIR/.local/.gitconfig-personal" ]] \
-  && ok ".gitconfig-personal exists" \
-  || warn ".gitconfig-personal missing — create it in .local/ (see git/README.md)"
-
-[[ -f "$DOTFILES_DIR/.local/.gitconfig-work" ]] \
-  && ok ".gitconfig-work exists" \
-  || warn ".gitconfig-work missing — create it in .local/ (see git/README.md)"
+if [[ -n "${GITHUB_ACCOUNTS:-}" ]]; then
+  for acct in $GITHUB_ACCOUNTS; do
+    if [[ -f "$DOTFILES_DIR/.local/.gitconfig-${acct}" ]]; then
+      ok ".gitconfig-${acct} exists"
+    else
+      warn ".gitconfig-${acct} missing — run: bootstrap.sh git"
+    fi
+  done
+else
+  warn "No GitHub accounts in machine.sh — run: bootstrap.sh to configure"
+fi
 
 # ── SSH ───────────────────────────────────────────────────────────────────────
 section "SSH"
 
-if [[ -f "$HOME/.ssh/id_ed25519" ]]; then
-  ok "SSH key exists: ~/.ssh/id_ed25519"
-
-  # Check if key is loaded in agent
-  if ssh-add -l 2>/dev/null | grep -q "id_ed25519"; then
-    ok "SSH key loaded in agent"
-  else
-    warn "SSH key not in agent — run: ssh-add --apple-use-keychain ~/.ssh/id_ed25519"
-  fi
-
-  # Test GitHub connection
-  if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
-    ok "GitHub SSH connection working"
-  else
-    warn "GitHub SSH not verified — run: ssh -T git@github.com"
-  fi
+if [[ -n "${GITHUB_ACCOUNTS:-}" ]]; then
+  for acct in $GITHUB_ACCOUNTS; do
+    KEY="$HOME/.ssh/id_ed25519_${acct}"
+    if [[ -f "$KEY" ]]; then
+      ok "SSH key exists: ~/.ssh/id_ed25519_${acct}"
+      if ssh-add -l 2>/dev/null | grep -q "id_ed25519_${acct}"; then
+        ok "SSH key loaded in agent (@${acct})"
+      else
+        warn "SSH key not in agent — run: ssh-add --apple-use-keychain ~/.ssh/id_ed25519_${acct}"
+      fi
+      if ssh -T "git@github-${acct}" 2>&1 | grep -q "successfully authenticated"; then
+        ok "GitHub SSH working: @${acct}"
+      else
+        warn "GitHub SSH not verified (@${acct}) — run: ssh -T git@github-${acct}"
+      fi
+    else
+      fail "No SSH key for @${acct} — run: bootstrap.sh ssh"
+    fi
+  done
 else
-  fail "No SSH key — run: bash $DOTFILES_DIR/scripts/ssh-keygen.sh"
+  warn "No GitHub accounts in machine.sh — run: bootstrap.sh to configure"
 fi
 
 mkdir -p "$HOME/.ssh/control"

@@ -13,6 +13,7 @@
 #   bootstrap.sh vscode    — reinstall VS Code extensions
 #   bootstrap.sh shell     — reinstall Oh My Zsh plugins, set default shell
 #   bootstrap.sh symlinks  — recreate all symlinks
+#   bootstrap.sh defaults  — apply macOS system preferences
 # =============================================================================
 
 set -euo pipefail
@@ -40,11 +41,11 @@ if [[ $# -gt 0 ]]; then
 
   for module in "$@"; do
     case "$module" in
-      ssh|git|claude|packages|vscode|shell|symlinks)
+      ssh|git|claude|packages|vscode|shell|symlinks|defaults)
         header "Running module: $module"
         ;;
       *)
-        error "Unknown module '$module'. Available: ssh git claude packages vscode shell symlinks"
+        error "Unknown module '$module'. Available: ssh git claude packages vscode shell symlinks defaults"
         ;;
     esac
   done
@@ -77,6 +78,7 @@ if [[ $# -gt 0 ]]; then
         success "Zsh plugins up to date"
         ;;
       symlinks) bash "$DOTFILES_DIR/scripts/symlink.sh" ;;
+      defaults) bash "$DOTFILES_DIR/macos/defaults.sh" ;;
     esac
   done
 
@@ -112,18 +114,45 @@ info "Brew:    $BREW_PREFIX"
 # ── 2. Module selection ───────────────────────────────────────────────────────
 header "What to configure"
 
-echo -e "  ${BOLD}packages${RESET}  — Homebrew bundle (formulae, casks, fonts)"
-echo -e "  ${BOLD}shell${RESET}     — Oh My Zsh, plugins, default shell"
-echo -e "  ${BOLD}symlinks${RESET}  — dotfile symlinks"
-echo -e "  ${BOLD}git${RESET}       — git identity files per account"
-echo -e "  ${BOLD}ssh${RESET}       — SSH keys for GitHub accounts"
-echo -e "  ${BOLD}claude${RESET}    — Claude / MCP integrations"
-echo -e "  ${BOLD}vscode${RESET}    — VS Code extensions"
-echo -e "  ${BOLD}all${RESET}       — everything above"
+_MODULES=(packages shell symlinks git ssh claude vscode defaults)
+
+echo -e "  ${BOLD}[1]${RESET} packages  — Homebrew bundle (formulae, casks, fonts)"
+echo -e "  ${BOLD}[2]${RESET} shell     — Oh My Zsh, plugins, default shell"
+echo -e "  ${BOLD}[3]${RESET} symlinks  — dotfile symlinks"
+echo -e "  ${BOLD}[4]${RESET} git       — git identity files per account"
+echo -e "  ${BOLD}[5]${RESET} ssh       — SSH keys for GitHub accounts"
+echo -e "  ${BOLD}[6]${RESET} claude    — Claude / MCP integrations"
+echo -e "  ${BOLD}[7]${RESET} vscode    — VS Code extensions"
+echo -e "  ${BOLD}[8]${RESET} defaults  — macOS system preferences"
+echo -e "  ${BOLD}[9]${RESET} all       — full fresh Mac setup (Xcode, Homebrew, clone + all modules)"
 echo ""
-read -rp "  Modules (space-separated) [all]: " _MODULE_INPUT
+read -rp "  Modules (comma-separated names or numbers) [all]: " _MODULE_INPUT
 _MODULE_INPUT="${_MODULE_INPUT:-all}"
-SELECTED_MODULES=($_MODULE_INPUT)
+
+SELECTED_MODULES=()
+IFS=',' read -ra _PARTS <<< "$_MODULE_INPUT"
+for _p in "${_PARTS[@]}"; do
+  _p="${_p//[[:space:]]/}"
+  [[ -z "$_p" ]] && continue
+  if [[ "$_p" =~ ^[0-9]+$ ]]; then
+    if [[ "$_p" == "9" ]]; then
+      SELECTED_MODULES=("all"); break
+    elif [[ "$_p" -ge 1 && "$_p" -le ${#_MODULES[@]} ]]; then
+      SELECTED_MODULES+=("${_MODULES[$((_p - 1))]}")
+    else
+      error "Invalid number: $_p (valid: 1-9)"
+    fi
+  elif [[ "$_p" == "all" ]]; then
+    SELECTED_MODULES=("all"); break
+  else
+    _valid=false
+    for _m in "${_MODULES[@]}"; do
+      [[ "$_p" == "$_m" ]] && _valid=true && break
+    done
+    [[ "$_valid" == true ]] || error "Unknown module '$_p'. Valid: ${_MODULES[*]} all"
+    SELECTED_MODULES+=("$_p")
+  fi
+done
 
 should_run() {
   local mod="$1"
@@ -131,6 +160,53 @@ should_run() {
 }
 
 info "Configuring: ${SELECTED_MODULES[*]}"
+
+# ── Specific modules selected — skip prerequisites and dispatch directly ───────
+if [[ ! " ${SELECTED_MODULES[*]} " =~ " all " ]]; then
+  if [[ ! -d "$DOTFILES_DIR" ]]; then
+    error "Dotfiles not found at $DOTFILES_DIR — select 'all' (or 9) for first-time setup"
+  fi
+
+  for module in "${SELECTED_MODULES[@]}"; do
+    case "$module" in
+      ssh)      bash "$DOTFILES_DIR/scripts/setup/ssh.sh" ;;
+      git)      bash "$DOTFILES_DIR/scripts/setup/git.sh" ;;
+      claude)   bash "$DOTFILES_DIR/scripts/setup/claude.sh" ;;
+      packages)
+        brew bundle --file="$DOTFILES_DIR/Brewfile" || warn "Some Brewfile items failed — check above"
+        [[ -f "$DOTFILES_DIR/.local/Brewfile.local" ]] && brew bundle --file="$DOTFILES_DIR/.local/Brewfile.local"
+        success "Homebrew bundle complete"
+        ;;
+      vscode)
+        if command -v code &>/dev/null; then
+          while IFS= read -r ext; do
+            [[ -z "$ext" || "$ext" == \#* ]] && continue
+            code --install-extension "$ext" --force 2>/dev/null || warn "Failed: $ext"
+          done < "$DOTFILES_DIR/vscode/extensions.txt"
+          success "VS Code extensions installed"
+        else
+          warn "VS Code 'code' CLI not found"
+        fi
+        ;;
+      shell)
+        ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+        [[ ! -d "$ZSH_CUSTOM/plugins/zsh-autosuggestions" ]] && \
+          git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+        [[ ! -d "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting" ]] && \
+          git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+        [[ ! -d "$ZSH_CUSTOM/plugins/you-should-use" ]] && \
+          git clone https://github.com/MichaelAquilina/zsh-you-should-use "$ZSH_CUSTOM/plugins/you-should-use"
+        success "Zsh plugins up to date"
+        ;;
+      symlinks) bash "$DOTFILES_DIR/scripts/symlink.sh" ;;
+      defaults) bash "$DOTFILES_DIR/macos/defaults.sh" ;;
+    esac
+  done
+
+  echo ""
+  success "Done. Run 'reload' to pick up any shell changes."
+  exit 0
+fi
 
 # ── 3. Collect GitHub accounts ────────────────────────────────────────────────
 # Accounts are needed when: dotfiles not yet cloned (fresh install),
@@ -174,39 +250,39 @@ if [[ "$NEEDS_ACCOUNTS" == true ]]; then
 
     read -rp "Add another GitHub account? [y/N]: " ADD_MORE
     if [[ "$ADD_MORE" =~ ^[Yy]$ ]]; then
-    echo ""
-    while true; do
-      num=$((ACCOUNT_COUNT + 1))
-      echo -e "${BOLD}── Account $num ─────────────────────────────${RESET}"
-
-      read -rp "  GitHub username: " GH_USER
-      read -rp "  Your name:       " GH_NAME
-      read -rp "  Email:           " GH_EMAIL
-
-      DEFAULT_FOLDER="github-${GH_USER}"
-      read -rp "  Repos folder     (~/${DEFAULT_FOLDER}/): " GH_FOLDER
-      GH_FOLDER="${GH_FOLDER:-$DEFAULT_FOLDER}"
-      GH_FOLDER="${GH_FOLDER#~/}"
-      GH_FOLDER="${GH_FOLDER%/}"
-
-      GH_USERNAMES+=("$GH_USER")
-      GH_NAMES+=("$GH_NAME")
-      GH_EMAILS+=("$GH_EMAIL")
-      GH_FOLDERS+=("$GH_FOLDER")
-      ACCOUNT_COUNT=$((ACCOUNT_COUNT + 1))
-      ACCOUNTS_UPDATED=true
-
       echo ""
-      echo -e "  ${GREEN}→ SSH host alias:${RESET} github-${GH_USER}"
-      echo -e "  ${GREEN}→ SSH key:${RESET}        ~/.ssh/id_ed25519_${GH_USER}"
-      echo -e "  ${GREEN}→ Repos in:${RESET}       ~/${GH_FOLDER}/"
-      echo ""
+      while true; do
+        num=$((ACCOUNT_COUNT + 1))
+        echo -e "${BOLD}── Account $num ─────────────────────────────${RESET}"
 
-      read -rp "Add yet another GitHub account? [y/N]: " ADD_MORE
-      [[ ! "$ADD_MORE" =~ ^[Yy]$ ]] && break
-      echo ""
-    done
-  fi
+        read -rp "  GitHub username: " GH_USER
+        read -rp "  Your name:       " GH_NAME
+        read -rp "  Email:           " GH_EMAIL
+
+        DEFAULT_FOLDER="github-${GH_USER}"
+        read -rp "  Repos folder     (~/${DEFAULT_FOLDER}/): " GH_FOLDER
+        GH_FOLDER="${GH_FOLDER:-$DEFAULT_FOLDER}"
+        GH_FOLDER="${GH_FOLDER#~/}"
+        GH_FOLDER="${GH_FOLDER%/}"
+
+        GH_USERNAMES+=("$GH_USER")
+        GH_NAMES+=("$GH_NAME")
+        GH_EMAILS+=("$GH_EMAIL")
+        GH_FOLDERS+=("$GH_FOLDER")
+        ACCOUNT_COUNT=$((ACCOUNT_COUNT + 1))
+        ACCOUNTS_UPDATED=true
+
+        echo ""
+        echo -e "  ${GREEN}→ SSH host alias:${RESET} github-${GH_USER}"
+        echo -e "  ${GREEN}→ SSH key:${RESET}        ~/.ssh/id_ed25519_${GH_USER}"
+        echo -e "  ${GREEN}→ Repos in:${RESET}       ~/${GH_FOLDER}/"
+        echo ""
+
+        read -rp "Add yet another GitHub account? [y/N]: " ADD_MORE
+        [[ ! "$ADD_MORE" =~ ^[Yy]$ ]] && break
+        echo ""
+      done
+    fi
 else
   echo -e "${BOLD}Set up your GitHub accounts.${RESET}"
   echo "Each account gets its own SSH key and git identity, scoped by folder."
@@ -275,7 +351,7 @@ else
   success "Xcode CLI tools already present"
 fi
 
-# ── 4. Homebrew ───────────────────────────────────────────────────────────────
+# ── 5. Homebrew ───────────────────────────────────────────────────────────────
 header "Homebrew"
 
 if ! command -v brew &>/dev/null; then
@@ -288,7 +364,7 @@ else
   success "Homebrew already present"
 fi
 
-# ── 5. Clone dotfiles ─────────────────────────────────────────────────────────
+# ── 6. Clone dotfiles ─────────────────────────────────────────────────────────
 header "Dotfiles repo"
 
 PRIMARY_GH_USER="${GH_USERNAMES[0]:-}"
@@ -313,7 +389,7 @@ else
   success "Dotfiles up to date"
 fi
 
-# ── 6. Write machine.sh ───────────────────────────────────────────────────────
+# ── 7. Write machine.sh ───────────────────────────────────────────────────────
 mkdir -p "$DOTFILES_DIR/.local"
 
 # Only write/update when accounts were actually loaded or collected.
@@ -348,7 +424,7 @@ if [[ "${#GH_USERNAMES[@]}" -gt 0 ]]; then
   fi
 fi
 
-# ── 9. Git identity ───────────────────────────────────────────────────────────
+# ── 8. Git identity ───────────────────────────────────────────────────────────
 if should_run "git"; then
   header "Git identity"
 
@@ -393,7 +469,7 @@ EOF
   fi
 fi
 
-# ── 10. Homebrew bundle ───────────────────────────────────────────────────────
+# ── 9. Homebrew bundle ───────────────────────────────────────────────────────
 if should_run "packages"; then
   header "Installing packages (Brewfile)"
 
@@ -404,7 +480,7 @@ if should_run "packages"; then
   success "Homebrew bundle complete"
 fi
 
-# ── 11. Oh My Zsh + plugins + default shell ───────────────────────────────────
+# ── 10. Oh My Zsh + plugins + default shell ───────────────────────────────────
 if should_run "shell"; then
   header "Shell"
 
@@ -432,13 +508,13 @@ if should_run "shell"; then
   fi
 fi
 
-# ── 12. Symlinks ──────────────────────────────────────────────────────────────
+# ── 11. Symlinks ──────────────────────────────────────────────────────────────
 if should_run "symlinks"; then
   header "Creating symlinks"
   bash "$DOTFILES_DIR/scripts/symlink.sh"
 fi
 
-# ── 13. VS Code extensions ────────────────────────────────────────────────────
+# ── 12. VS Code extensions ────────────────────────────────────────────────────
 if should_run "vscode"; then
   header "VS Code extensions"
 
@@ -453,7 +529,7 @@ if should_run "vscode"; then
   fi
 fi
 
-# ── 14. SSH keys ──────────────────────────────────────────────────────────────
+# ── 13. SSH keys ──────────────────────────────────────────────────────────────
 if should_run "ssh"; then
   header "SSH keys"
 
@@ -551,7 +627,7 @@ EOF
   success "git protocol switched to SSH"
 fi
 
-# ── 15. Claude / MCP ─────────────────────────────────────────────────────────
+# ── 14. Claude / MCP ─────────────────────────────────────────────────────────
 if should_run "claude"; then
   header "Claude / MCP setup"
 
@@ -575,12 +651,18 @@ EOF
 fi
 
 
-# ── 17. Git hooks (always — keeps dotfiles repo in sync) ──────────────────────
+# ── 15. Git hooks (always — keeps dotfiles repo in sync) ──────────────────────
 GIT_HOOKS_DIR="$DOTFILES_DIR/.git/hooks"
 if [[ -f "$DOTFILES_DIR/sync/hooks/post-merge" ]]; then
   cp "$DOTFILES_DIR/sync/hooks/post-merge" "$GIT_HOOKS_DIR/post-merge"
   cp "$DOTFILES_DIR/sync/hooks/pre-push"   "$GIT_HOOKS_DIR/pre-push"
   chmod +x "$GIT_HOOKS_DIR/post-merge" "$GIT_HOOKS_DIR/pre-push"
+fi
+
+# ── 16. macOS defaults ────────────────────────────────────────────────────────
+if should_run "defaults"; then
+  header "macOS defaults"
+  bash "$DOTFILES_DIR/macos/defaults.sh"
 fi
 
 # ── Done ──────────────────────────────────────────────────────────────────────
@@ -599,5 +681,5 @@ echo "  1. Reload your shell:  reload"
 echo "  2. Verify everything:  dotcheck"
 echo ""
 echo "  Re-run individual modules any time:"
-echo "    bootstrap.sh ssh | git | claude | packages | vscode | shell | symlinks"
+echo "    bootstrap.sh ssh | git | claude | packages | vscode | shell | symlinks | defaults"
 echo -e "${RESET}"

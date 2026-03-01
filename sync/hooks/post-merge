@@ -20,7 +20,7 @@ for dir in $CONFIG_DIRS; do
 done
 
 # Re-chmod bin/ if any scripts changed
-if echo "$CHANGED_FILES" | grep -q "^bin/\|^sync/\|^scripts/"; then
-  find "$DOTFILES_DIR/bin" "$DOTFILES_DIR/sync" "$DOTFILES_DIR/scripts" \
+if echo "$CHANGED_FILES" | grep -q "^bin/\|^sync/\|^scripts/\|^macos/"; then
+  find "$DOTFILES_DIR/bin" "$DOTFILES_DIR/sync" "$DOTFILES_DIR/scripts" "$DOTFILES_DIR/macos" \
     -type f ! -name "*.md" -exec chmod +x {} \; 2>/dev/null || true
 fi

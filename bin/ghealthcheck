@@ -16,8 +16,9 @@ echo "── Unpushed branches ────────────────�
 git branch -vv | grep -E 'ahead|gone' || echo "  All branches up to date"
 echo ""
 echo "── Large files (>1MB tracked) ───────────"
-git ls-files | xargs -I {} sh -c 'test -f "{}" && du -sh "{}"' 2>/dev/null \
-  | awk '$1 ~ /[0-9]+M/ || $1 ~ /[0-9]+G/' | sort -rh | head -10 \
-  || echo "  No large files found"
+LARGE=$(git ls-files | while IFS= read -r f; do
+  [[ -f "$f" ]] && du -sh "$f" 2>/dev/null || true
+done | awk '$1 ~ /[0-9]+M/ || $1 ~ /[0-9]+G/' | sort -rh | head -10)
+if [[ -n "$LARGE" ]]; then echo "$LARGE"; else echo "  No large files found"; fi
 echo ""
 echo "✓ Health check complete"

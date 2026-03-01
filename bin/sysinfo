@@ -11,7 +11,7 @@ echo "  Chip:      $(uname -m) — $(sysctl -n machdep.cpu.brand_string 2>/dev/n
 echo "  RAM:       $(( $(sysctl -n hw.memsize) / 1073741824 ))GB"
 echo "  Uptime:    $(uptime | sed 's/.*up //' | sed 's/, load.*//')"
 echo "  Shell:     $SHELL ($ZSH_VERSION)"
-echo "  IP (local):$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || echo 'N/A')"
+echo "  IP (local): $(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || echo 'N/A')"
 echo "  IP (pub):  $(curl -s --max-time 3 https://ipinfo.io/ip 2>/dev/null || echo 'N/A')"
 echo "  Disk:      $(df -h / | awk 'NR==2 {print $3 " used / " $2 " total (" $5 " full)"}')"
 echo ""

@@ -15,9 +15,13 @@ for f in "$@"; do
   [[ -e "$f" || -L "$f" ]] || { echo "⚠ Not found: $f"; continue; }
   BASENAME=$(basename "$f")
   DEST="$TRASH_DIR/$BASENAME"
-  # Avoid collision
+  # Avoid collision — handle files with and without extensions
   if [[ -e "$DEST" ]]; then
-    DEST="$TRASH_DIR/${BASENAME%.*}_$(date +%H%M%S).${BASENAME##*.}"
+    if [[ "$BASENAME" == *.* ]]; then
+      DEST="$TRASH_DIR/${BASENAME%.*}_$(date +%H%M%S).${BASENAME##*.}"
+    else
+      DEST="$TRASH_DIR/${BASENAME}_$(date +%H%M%S)"
+    fi
   fi
   mv "$f" "$DEST"
   echo "  → Trashed: $f"
