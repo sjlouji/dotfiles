@@ -17,9 +17,9 @@ set -euo pipefail
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 BLUE='\033[0;34m'; BOLD='\033[1m'; RESET='\033[0m'
 
-info()    { echo -e "${BLUE}▶ $*${RESET}"; }
-success() { echo -e "${GREEN}✓ $*${RESET}"; }
-warn()    { echo -e "${YELLOW}⚠ $*${RESET}"; }
+info()    { printf '%b\n' "${BLUE}▶ $*${RESET}"; }
+success() { printf '%b\n' "${GREEN}✓ $*${RESET}"; }
+warn()    { printf '%b\n' "${YELLOW}⚠ $*${RESET}"; }
 
 MACHINE_NAME="${MACHINE_NAME:-$(hostname -s)}"
 
@@ -29,7 +29,7 @@ KEY_EMAIL="${2:-}"
 MACHINE_NAME="${3:-$MACHINE_NAME}"
 
 if [[ -z "$GH_USER" ]]; then
-  echo -e "${BOLD}SSH Key Setup — GitHub Account${RESET}"
+  printf '%b\n' "${BOLD}SSH Key Setup — GitHub Account${RESET}"
   echo ""
   read -rp "  GitHub username: " GH_USER
 fi
@@ -39,7 +39,7 @@ if [[ -z "$KEY_EMAIL" ]]; then
 fi
 
 KEY_PATH="$HOME/.ssh/id_ed25519_${GH_USER}"
-SSH_ACCOUNTS_CONF="$HOME/.dotfiles/.local/ssh_accounts.conf"
+SSH_ACCOUNTS_CONF="$HOME/.ssh/ssh_accounts.conf"
 
 mkdir -p "$HOME/.ssh/control"
 chmod 700 "$HOME/.ssh"
@@ -111,7 +111,7 @@ success "SSH alias added: github-${GH_USER} → @${GH_USER}"
 
 # ── Show public key ───────────────────────────────────────────────────────────
 echo ""
-echo -e "${BOLD}Public key for @${GH_USER}:${RESET}"
+printf '%b\n' "${BOLD}Public key for @${GH_USER}:${RESET}"
 echo "──────────────────────────────────────────────────────────────"
 cat "${KEY_PATH}.pub"
 echo "──────────────────────────────────────────────────────────────"
@@ -131,5 +131,5 @@ else
 fi
 
 echo ""
-echo -e "${BOLD}Clone repos using:${RESET}"
+printf '%b\n' "${BOLD}Clone repos using:${RESET}"
 echo "  git clone git@github-${GH_USER}:${GH_USER}/repo.git"

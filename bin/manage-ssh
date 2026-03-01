@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Usage: manage-ssh [list|add|edit|delete|test]
+exec bash "${DOTFILES_DIR:-$HOME/.dotfiles}/scripts/setup/ssh.sh" "$@"

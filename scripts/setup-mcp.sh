@@ -61,7 +61,8 @@ fi
 if ! command -v npx &>/dev/null; then
   warn "npx not found — install Node.js via mise first:"
   warn "  mise use --global node@lts"
-  exit 1
+  warn "Then re-run: setup-mcp"
+  exit 0
 fi
 
 # ── 4. Pre-install MCP packages globally ─────────────────────────────────────

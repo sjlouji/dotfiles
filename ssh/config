@@ -22,7 +22,7 @@ Host *
 #
 # Keys are stored in Apple Keychain — no passphrase prompts after first unlock.
 # To add a new account, run bootstrap.sh or scripts/ssh-keygen.sh directly.
-Include ~/.dotfiles/.local/ssh_accounts.conf
+Include ~/.ssh/ssh_accounts.conf
 
 # ── Example: Jump host / bastion ──────────────────────────────────────────────
 # Host bastion
