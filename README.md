@@ -30,6 +30,24 @@ Git will use the right identity automatically based on which folder your repo li
 
 ---
 
+## Re-running a module on an existing Mac
+
+From inside `~/.dotfiles`:
+
+```sh
+make git       # regenerate git identity files
+make ssh       # regenerate SSH keys
+make packages  # re-run brew bundle
+make shell     # reinstall Oh My Zsh plugins, reset default shell
+make symlinks  # recreate dotfile symlinks
+make vscode    # reinstall VS Code extensions
+make claude    # re-configure Claude / MCP
+make defaults  # re-apply macOS system preferences
+make           # show all available targets
+```
+
+---
+
 ## After installation
 
 Once bootstrap finishes, do these three things:
@@ -146,7 +164,7 @@ All scripts in `bin/` work as normal terminal commands. See [bin/README.md](bin/
 
 ## Adding something new
 
-**New app or tool** → add to `Brewfile`, run `make packages` or `brew bundle`, then `dsync`.
+**New app or tool** → add to `Brewfile`, run `make packages`, then `dsync`.
 
 **New shell alias** → add to `zsh/aliases.zsh`, then `dsync`.
 
