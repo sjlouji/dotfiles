@@ -125,15 +125,6 @@ defaults write com.apple.ActivityMonitor ShowCategory -int 0       # all process
 defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
 defaults write com.apple.ActivityMonitor SortDirection -int 0
 
-# ── Safari ───────────────────────────────────────────────────────────────────
-echo "  › Safari"
-
-# Show full URL in address bar
-defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
-# Enable developer menu
-defaults write com.apple.Safari IncludeDevelopMenu -bool true
-defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-
 # ── TextEdit ─────────────────────────────────────────────────────────────────
 echo "  › TextEdit"
 

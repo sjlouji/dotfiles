@@ -81,7 +81,7 @@
 
 # ── URL shortcuts ─────────────────────────────────────────────────────────────
 [url "git@github.com:"]
-  insteadOf = https://github.com/
+  pushInsteadOf = https://github.com/
 
 # ── Credential helpers ────────────────────────────────────────────────────────
 [credential]
