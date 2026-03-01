@@ -28,14 +28,14 @@ Create these two files in `.local/` (they stay off GitHub):
 # ~/.dotfiles/.local/.gitconfig-personal
 [user]
   name  = Joan
-  email = sjlouji10@gmail.com
+  email = name@domain.com
 ```
 
 ```sh
 # ~/.dotfiles/.local/.gitconfig-work
 [user]
   name  = Joan
-  email = joanlouji@freehand.ai
+  email = name-work@domain.com
 ```
 
 Git will automatically use the right one based on which folder your repo is in (`~/personal/` → personal, `~/work/` → work).
