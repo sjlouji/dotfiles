@@ -55,7 +55,7 @@ if [[ $# -gt 0 ]]; then
       ssh)      bash "$DOTFILES_DIR/scripts/setup/ssh.sh" ;;
       git)      bash "$DOTFILES_DIR/scripts/setup/git.sh" ;;
       claude)   bash "$DOTFILES_DIR/scripts/setup/claude.sh" ;;
-      packages) brew bundle --file="$DOTFILES_DIR/Brewfile" || warn "Some items failed — check above" ;;
+      packages) brew bundle --verbose --file="$DOTFILES_DIR/Brewfile" || warn "Some items failed — check above" ;;
       vscode)
         if command -v code &>/dev/null; then
           while IFS= read -r ext; do
@@ -173,8 +173,8 @@ if [[ ! " ${SELECTED_MODULES[*]} " =~ " all " ]]; then
       git)      bash "$DOTFILES_DIR/scripts/setup/git.sh" ;;
       claude)   bash "$DOTFILES_DIR/scripts/setup/claude.sh" ;;
       packages)
-        brew bundle --file="$DOTFILES_DIR/Brewfile" || warn "Some Brewfile items failed — check above"
-        [[ -f "$DOTFILES_DIR/.local/Brewfile.local" ]] && brew bundle --file="$DOTFILES_DIR/.local/Brewfile.local"
+        brew bundle --verbose --file="$DOTFILES_DIR/Brewfile" || warn "Some Brewfile items failed — check above"
+        [[ -f "$DOTFILES_DIR/.local/Brewfile.local" ]] && brew bundle --verbose --file="$DOTFILES_DIR/.local/Brewfile.local"
         success "Homebrew bundle complete"
         ;;
       vscode)
@@ -473,9 +473,9 @@ fi
 if should_run "packages"; then
   header "Installing packages (Brewfile)"
 
-  brew bundle --file="$DOTFILES_DIR/Brewfile" || warn "Some Brewfile items failed — check above"
+  brew bundle --verbose --file="$DOTFILES_DIR/Brewfile" || warn "Some Brewfile items failed — check above"
   if [[ -f "$DOTFILES_DIR/.local/Brewfile.local" ]]; then
-    brew bundle --file="$DOTFILES_DIR/.local/Brewfile.local"
+    brew bundle --verbose --file="$DOTFILES_DIR/.local/Brewfile.local"
   fi
   success "Homebrew bundle complete"
 fi
