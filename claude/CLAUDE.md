@@ -64,6 +64,9 @@ Keep it current. It is the single source of truth for how Claude should work wit
 - Machine-specific files live in `~/.dotfiles/.local/` (gitignored)
 - All custom scripts go in `~/.dotfiles/bin/` and should be executable
 - Sync dotfiles with `dsync` (push) or `dsync pull`
+- macOS system preferences live in `macos/defaults.sh` — run `make defaults` to apply
+- `Makefile` at repo root wraps `bootstrap.sh` — prefer `make <module>` for one-off re-runs
+- `bootstrap.sh` shows a numbered menu when run with no args; accepts comma-separated names or numbers (`4,5` or `git,ssh`); `all`/`9` = full fresh-Mac setup
 
 ---
 
