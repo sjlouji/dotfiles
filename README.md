@@ -1,9 +1,3 @@
-# dotfiles
-
-My personal Mac setup — configs, tools, and scripts that follow me across every machine.
-
----
-
 ## Setting up a new Mac
 
 Paste this into Terminal and follow the prompts:
