@@ -1,0 +1,10 @@
+# =============================================================================
+# mise/config.toml — Global runtime versions
+# Symlinked to ~/.config/mise/config.toml by symlink.sh
+#
+# Install/update all tools:  mise install
+# =============================================================================
+
+[tools]
+node    = "lts"
+python  = "latest"

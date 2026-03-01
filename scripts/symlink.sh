@@ -65,6 +65,10 @@ chmod 700 "$HOME/.ssh"
 link "$DOTFILES_DIR/ssh/config" "$HOME/.ssh/config"
 chmod 600 "$HOME/.ssh/config"
 
+# ── Mise (runtime versions) ───────────────────────────────────────────────────
+mkdir -p "$HOME/.config/mise"
+link "$DOTFILES_DIR/mise/config.toml" "$HOME/.config/mise/config.toml"
+
 # ── Claude ────────────────────────────────────────────────────────────────────
 mkdir -p "$HOME/.claude"
 link "$DOTFILES_DIR/claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"

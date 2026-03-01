@@ -478,6 +478,14 @@ if should_run "packages"; then
     brew bundle --verbose --file="$DOTFILES_DIR/.local/Brewfile.local"
   fi
   success "Homebrew bundle complete"
+
+  if command -v mise &>/dev/null; then
+    info "Installing runtime versions (node lts, python latest)..."
+    mise install --yes 2>&1 | grep -v "^$" || warn "mise install had issues — run: mise install"
+    success "mise runtimes installed"
+  else
+    warn "mise not found — re-run 'make packages' then 'make symlinks' and retry"
+  fi
 fi
 
 # ── 10. Oh My Zsh + plugins + default shell ───────────────────────────────────
