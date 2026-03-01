@@ -6,16 +6,27 @@ Run any command with `--help` to see usage details.
 
 ---
 
+## Setup & Audit
+
+| Command | What it does |
+|---|---|
+| `dotcheck` | Audit the full dotfiles setup — shows what is active, missing, or broken with fix commands |
+
 ## System
 
 | Command | What it does |
 |---|---|
 | `flushdns` | Flush the DNS cache |
-| `killport 3000` | Kill whatever process is running on a port |
+| `findport` | List every port currently in use |
+| `findport 3000` | Show what's running on port 3000 |
+| `findport node` | Show all ports used by a process name |
+| `killport 3000` | Show what's on a port, confirm, then kill it |
+| `killport 3000 --force` | Kill a port immediately without asking |
 | `clearcache` | Clear npm, pip, and Xcode caches |
 | `diskcheck` | Show disk usage — warns if over 80% full |
 | `sysinfo` | Quick summary: macOS version, chip, RAM, IP, uptime |
 | `purge` | Free up inactive memory |
+| `setup-captures` | Set up auto-organised folders for screenshots and screen recordings |
 
 ## Files
 

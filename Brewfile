@@ -1,80 +1,93 @@
 # =============================================================================
-# Brewfile — Declarative package list
-# Run: brew bundle --file=Brewfile
+# Brewfile
+# Install everything: brew bundle --file=Brewfile
 # =============================================================================
 
 # ── Taps ──────────────────────────────────────────────────────────────────────
 tap "homebrew/bundle"
 tap "homebrew/cask-fonts"
+tap "supabase/tap"
 
 # ── CLI Essentials ────────────────────────────────────────────────────────────
 brew "git"              # version control
-brew "gh"               # GitHub CLI
-brew "curl"             # HTTP client
-brew "wget"             # file downloader
-brew "jq"               # JSON processor
-brew "yq"               # YAML processor
-brew "fzf"              # fuzzy finder
-brew "ripgrep"          # fast grep (rg)
-brew "fd"               # fast find
-brew "bat"              # cat with syntax highlighting
-brew "eza"              # modern ls replacement
-brew "delta"            # better git diffs
-brew "tree"             # directory tree viewer
-brew "zoxide"           # smarter cd
-brew "tldr"             # simplified man pages
-brew "htop"             # process monitor
-brew "bottom"           # system resource monitor (btm)
-brew "hyperfine"        # benchmarking tool
-brew "gum"              # shell script UI components
-brew "age"              # encryption tool
+brew "gh"               # GitHub CLI — create PRs, manage issues from terminal
+brew "curl"             # HTTP requests
+brew "wget"             # file downloads
+brew "jq"               # parse and query JSON
+brew "yq"               # parse and query YAML
+brew "fzf"              # fuzzy search — used by gpr and other bin scripts
+brew "ripgrep"          # fast text search across files (rg)
+brew "fd"               # fast file finder
+brew "bat"              # better cat with syntax highlighting
+brew "eza"              # better ls with icons and git status
+brew "delta"            # better git diffs with syntax highlighting
+brew "tree"             # show folder structure as a tree
+brew "zoxide"           # smarter cd — jumps to frecent directories
+brew "gum"              # pretty prompts and spinners for shell scripts
+brew "age"              # simple file encryption
 
-# ── Dev Tools ─────────────────────────────────────────────────────────────────
-brew "mise"             # runtime version manager (node, python, ruby, etc.)
-brew "direnv"           # per-directory env vars
-brew "git-lfs"          # large file storage
-brew "pre-commit"       # git hook framework
-brew "act"              # run GitHub Actions locally
+# ── Developer Tools ───────────────────────────────────────────────────────────
+brew "mise"             # manage Node, Python, Ruby versions (replaces nvm, pyenv)
+brew "direnv"           # load .env files automatically per project folder
+brew "git-lfs"          # store large files (videos, datasets) in git repos
+brew "lazygit"          # terminal UI for git — visual branch/commit management
+brew "pre-commit"       # run checks automatically before every git commit
+brew "act"              # run GitHub Actions locally before pushing
+brew "mkcert"           # create trusted HTTPS certificates for local development
+brew "grpcurl"          # test gRPC APIs from the terminal (like curl for gRPC)
 
-# ── Networking ────────────────────────────────────────────────────────────────
-brew "nmap"             # network scanner
-brew "httpie"           # friendly HTTP client
-brew "mtr"              # traceroute + ping
-brew "dog"              # DNS lookup tool
+# ── AI Tools ──────────────────────────────────────────────────────────────────
+brew "ollama"           # run AI models locally (Llama, Mistral, etc.)
+
+# ── API & Networking ──────────────────────────────────────────────────────────
+brew "httpie"           # human-friendly HTTP client (easier than curl)
+brew "nmap"             # network scanner — useful for debugging connectivity
+brew "dog"              # better DNS lookup tool
 
 # ── Shell ─────────────────────────────────────────────────────────────────────
 brew "zsh"
 brew "zsh-completions"
-brew "starship"         # prompt (optional — OMZ themes take priority)
 
 # ── macOS Utilities ───────────────────────────────────────────────────────────
-brew "mas"              # Mac App Store CLI
-brew "dockutil"         # manage Dock items from CLI
-brew "switchaudio-osx"  # switch audio devices
-brew "pinentry-mac"     # GPG PIN entry
+brew "mas"              # install apps from the Mac App Store via terminal
+brew "dockutil"         # manage Dock items from a script
+brew "switchaudio-osx"  # switch audio output devices from terminal
 
-# ── Apps (Casks) ──────────────────────────────────────────────────────────────
-cask "visual-studio-code"
-cask "iterm2"
-cask "raycast"          # Spotlight replacement + AI
-cask "1password"
-cask "1password-cli"    # op CLI for secrets
-cask "rectangle"        # window management
-cask "arc"              # browser
+# ── Apps ──────────────────────────────────────────────────────────────────────
+
+# Editors & Terminals
+cask "visual-studio-code"           # primary editor
+cask "cursor"                       # AI-first code editor (VS Code fork)
+cask "warp"                         # AI terminal with autocomplete and natural language
+
+# Containers & Local Dev
+cask "orbstack"                     # lightweight Docker + Linux VMs (replaces Docker Desktop)
+
+# API Testing
+cask "insomnia"                     # API client for REST and GraphQL testing
+
+# Design & Product
+cask "figma"                        # UI/UX design — essential for product work
+cask "loom"                         # quick screen recordings for async comms and docs
+
+# AI
+cask "claude"                       # Claude desktop app
+cask "chatgpt"                      # ChatGPT desktop app
+
+# Communication & Productivity
 cask "slack"
-cask "zoom"
 cask "notion"
-cask "obsidian"
-cask "cleanmymac"
-cask "istat-menus"      # system stats in menu bar
-cask "tableplus"        # DB GUI
-cask "proxyman"         # HTTP proxy / debugger
+cask "obsidian"                     # local-first notes and second brain
+
+# Database
+cask "dbeaver-community"            # universal DB GUI — works with Postgres, MySQL, SQLite, and more
 
 # ── Fonts ─────────────────────────────────────────────────────────────────────
 cask "font-jetbrains-mono-nerd-font"
 cask "font-fira-code-nerd-font"
 
 # ── Mac App Store ─────────────────────────────────────────────────────────────
-# mas "Amphetamine", id: 937984704       # keep Mac awake
-# mas "Hand Mirror", id: 1502839586      # quick camera check
-# (uncomment the ones you use, add your own)
+# Uncomment what you use:
+# mas "Amphetamine", id: 937984704      # keep Mac awake during long tasks
+# mas "Hand Mirror", id: 1502839586     # quick webcam check before calls
+# mas "Lungo", id: 1263070803           # lightweight alternative to Amphetamine

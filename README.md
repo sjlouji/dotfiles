@@ -16,6 +16,56 @@ It will ask one question: **personal** or **work** Mac? Everything else happens 
 
 ---
 
+## After installation
+
+Once bootstrap finishes, do these three things:
+
+**1. Set up your git identity**
+
+Create these two files in `.local/` (they stay off GitHub):
+
+```sh
+# ~/.dotfiles/.local/.gitconfig-personal
+[user]
+  name  = Joan
+  email = sjlouji10@gmail.com
+```
+
+```sh
+# ~/.dotfiles/.local/.gitconfig-work
+[user]
+  name  = Joan
+  email = joanlouji@freehand.ai
+```
+
+Git will automatically use the right one based on which folder your repo is in (`~/personal/` → personal, `~/work/` → work).
+
+**2. Set up screenshots and recordings**
+
+```sh
+setup-captures
+```
+
+From now on, screenshots go to `~/Downloads/Screenshots` and screen recordings go to `~/Downloads/Screen Recordings` automatically.
+
+**3. Reload your shell**
+
+```sh
+reload
+```
+
+---
+
+## Check your setup at any time
+
+```sh
+dotcheck
+```
+
+This audits everything — symlinks, git identity, SSH, scripts, sync, screenshots — and tells you exactly what's active, what's missing, and what command to run to fix it.
+
+---
+
 ## What's inside
 
 | Folder | What it does |

@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# =============================================================================
+# findport — Find what's running on a port, or list all listening ports
+# Usage:
+#   findport          list every port currently in use
+#   findport 3000     show what's on port 3000
+#   findport node     show all ports used by a process name
+# =============================================================================
+
+set -euo pipefail
+
+BLUE='\033[0;34m'; BOLD='\033[1m'; YELLOW='\033[1;33m'
+GREEN='\033[0;32m'; RESET='\033[0m'
+
+[[ "${1:-}" == "--help" ]] && {
+  echo "Usage: findport [port|process]"
+  echo ""
+  echo "  findport           list all listening ports"
+  echo "  findport 3000      show what's on port 3000"
+  echo "  findport node      show all ports used by 'node'"
+  exit 0
+}
+
+QUERY="${1:-}"
+
+print_header() {
+  echo ""
+  printf "  ${BOLD}%-8s %-12s %-8s %-20s %s${RESET}\n" "PORT" "PROCESS" "PID" "USER" "COMMAND"
+  printf "  %-8s %-12s %-8s %-20s %s\n"                 "----" "-------" "---" "----" "-------"
+}
+
+print_row() {
+  local port="$1" proc="$2" pid="$3" user="$4"
+  local cmd
+  cmd=$(ps -p "$pid" -o command= 2>/dev/null | cut -c1-50 || echo "—")
+  printf "  ${GREEN}%-8s${RESET} ${BLUE}%-12s${RESET} %-8s %-20s %s\n" \
+    "$port" "$proc" "$pid" "$user" "$cmd"
+}
+
+# ── No argument: list all listening ports ─────────────────────────────────────
+if [[ -z "$QUERY" ]]; then
+  echo -e "\n${BOLD}All listening ports:${RESET}"
+  print_header
+  lsof -iTCP -sTCP:LISTEN -n -P 2>/dev/null | awk 'NR>1' | sort -t: -k2 -n | \
+  while read -r line; do
+    PROC=$(echo "$line" | awk '{print $1}')
+    PID=$(echo  "$line" | awk '{print $2}')
+    USER=$(echo "$line" | awk '{print $3}')
+    PORT=$(echo "$line" | awk '{print $9}' | rev | cut -d: -f1 | rev)
+    print_row "$PORT" "$PROC" "$PID" "$USER"
+  done
+  echo ""
+  exit 0
+fi
+
+# ── Numeric argument: look up a specific port ─────────────────────────────────
+if [[ "$QUERY" =~ ^[0-9]+$ ]]; then
+  INFO=$(lsof -iTCP:"$QUERY" -sTCP:LISTEN -n -P 2>/dev/null | awk 'NR>1' || true)
+  if [[ -z "$INFO" ]]; then
+    echo -e "${YELLOW}Nothing is listening on port $QUERY${RESET}"
+    exit 0
+  fi
+  echo -e "\n${BOLD}Port $QUERY:${RESET}"
+  print_header
+  while IFS= read -r line; do
+    PROC=$(echo "$line" | awk '{print $1}')
+    PID=$(echo  "$line" | awk '{print $2}')
+    USER=$(echo "$line" | awk '{print $3}')
+    print_row "$QUERY" "$PROC" "$PID" "$USER"
+  done <<< "$INFO"
+  echo ""
+  echo "  To kill it: killport $QUERY"
+  echo ""
+  exit 0
+fi
+
+# ── String argument: look up a process name ───────────────────────────────────
+INFO=$(lsof -iTCP -sTCP:LISTEN -n -P 2>/dev/null | awk -v q="$QUERY" 'NR>1 && tolower($1) ~ tolower(q)' || true)
+if [[ -z "$INFO" ]]; then
+  echo -e "${YELLOW}No listening ports found for '$QUERY'${RESET}"
+  exit 0
+fi
+echo -e "\n${BOLD}Ports used by '$QUERY':${RESET}"
+print_header
+while IFS= read -r line; do
+  PROC=$(echo "$line" | awk '{print $1}')
+  PID=$(echo  "$line" | awk '{print $2}')
+  USER=$(echo "$line" | awk '{print $3}')
+  PORT=$(echo "$line" | awk '{print $9}' | rev | cut -d: -f1 | rev)
+  print_row "$PORT" "$PROC" "$PID" "$USER"
+done <<< "$INFO"
+echo ""

@@ -95,9 +95,11 @@ defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
 # ── Screen ───────────────────────────────────────────────────────────────────
 echo "  › Screen"
 
-# Save screenshots to Desktop/Screenshots folder
-mkdir -p ~/Desktop/Screenshots
-defaults write com.apple.screencapture location -string "~/Desktop/Screenshots"
+# Save screenshots and recordings to Downloads/Screenshots
+# (run setup-captures for full setup including the Desktop watcher)
+mkdir -p ~/Downloads/Screenshots
+mkdir -p ~/Downloads/Screen\ Recordings
+defaults write com.apple.screencapture location -string "$HOME/Downloads/Screenshots"
 # Save screenshots as PNG
 defaults write com.apple.screencapture type -string "png"
 # Disable screenshot shadow

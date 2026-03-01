@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# =============================================================================
+# setup-captures — Set up screenshot and screen recording auto-organisation
+#
+# Creates folders in ~/Downloads and tells macOS to save all screenshots
+# and screen recordings there automatically. Also installs a background
+# watcher that catches anything saved to the Desktop from other tools.
+#
+# Usage: setup-captures
+# =============================================================================
+
+set -euo pipefail
+
+GREEN='\033[0;32m'; BLUE='\033[0;34m'; BOLD='\033[1m'; RESET='\033[0m'
+
+SCREENSHOTS_DIR="$HOME/Downloads/Screenshots"
+RECORDINGS_DIR="$HOME/Downloads/Screen Recordings"
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+
+[[ "${1:-}" == "--help" ]] && {
+  echo "Usage: setup-captures"
+  echo "Sets up auto-organised folders for screenshots and screen recordings."
+  exit 0
+}
+
+echo -e "${BLUE}▶ Setting up capture folders...${RESET}"
+
+# ── Create folders ────────────────────────────────────────────────────────────
+mkdir -p "$SCREENSHOTS_DIR"
+mkdir -p "$RECORDINGS_DIR"
+echo -e "${GREEN}  ✓ Created: ~/Downloads/Screenshots${RESET}"
+echo -e "${GREEN}  ✓ Created: ~/Downloads/Screen Recordings${RESET}"
+
+# ── Tell macOS Screenshot app to save here ────────────────────────────────────
+defaults write com.apple.screencapture location -string "$SCREENSHOTS_DIR"
+defaults write com.apple.screencapture show-thumbnail -bool true
+killall SystemUIServer 2>/dev/null || true
+echo -e "${GREEN}  ✓ macOS screenshot location set to ~/Downloads/Screenshots${RESET}"
+
+# ── Install the watcher LaunchAgent ──────────────────────────────────────────
+PLIST_SRC="$DOTFILES_DIR/macos/com.captures.watcher.plist"
+PLIST_DEST="$HOME/Library/LaunchAgents/com.captures.watcher.plist"
+
+if [[ -f "$PLIST_SRC" ]]; then
+  # Inject real username into WatchPaths (plist can't use $HOME or ~)
+  launchctl unload "$PLIST_DEST" 2>/dev/null || true
+  sed "s|PLACEHOLDER_USER|$(whoami)|g" "$PLIST_SRC" > "$PLIST_DEST"
+  launchctl load "$PLIST_DEST"
+  echo -e "${GREEN}  ✓ Desktop watcher installed and running${RESET}"
+fi
+
+echo ""
+echo -e "${BOLD}Done. From now on:${RESET}"
+echo "  📸 Screenshots  → ~/Downloads/Screenshots"
+echo "  🎬 Recordings   → ~/Downloads/Screen Recordings"
+echo ""
+echo "  The watcher also monitors your Desktop and moves any"
+echo "  stray screenshots or recordings there automatically."
