@@ -11,8 +11,12 @@
   autocrlf      = input
   whitespace    = trailing-space,space-before-tab
 
+[commit]
+  template      = ~/.dotfiles/git/.gitmessage
+
 [init]
   defaultBranch = main
+  templateDir   = ~/.git_template
 
 [pull]
   rebase = true
@@ -22,7 +26,8 @@
   autoSetupRemote = true
 
 [rebase]
-  autostash = true
+  autostash  = true
+  autosquash = true
 
 [fetch]
   prune = true
@@ -32,7 +37,7 @@
 
 [diff]
   algorithm     = histogram
-  colorMoved    = default
+  colorMoved    = zebra
 
 # ── Delta (diff pager) ────────────────────────────────────────────────────────
 [interactive]
@@ -47,18 +52,32 @@
 
 # ── Aliases ───────────────────────────────────────────────────────────────────
 [alias]
+  # Status / info
   st            = status -sb
+  aliases       = config --get-regexp alias
+  whoami        = "!echo \"$(git config user.name) <$(git config user.email)>\""
+  root          = rev-parse --show-toplevel
+  branches      = for-each-ref --sort=-committerdate --format="%(color:blue)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)" refs/remotes
+  recent        = branch --sort=-committerdate --format='%(refname:short) — %(committerdate:relative)'
+  # Log
   lg            = log --oneline --decorate --graph
   lga           = log --oneline --decorate --graph --all
-  aliases       = config --get-regexp alias
+  # Staging
+  aa            = add --all
+  ap            = add --patch
+  # Commit
+  ci            = commit -v
+  wip           = "!git add -A && git commit -m 'wip: $(date +%Y-%m-%d)'"
+  # Checkout
+  co            = checkout
+  # Push
+  pf            = push --force-with-lease
+  # Undo / restore
   undo          = reset HEAD~1 --soft
   unstage       = restore --staged
   discard       = restore
+  # Cleanup
   branch-clean  = "!git branch --merged main | grep -v 'main\\|\\*' | xargs git branch -d"
-  whoami        = "!echo \"$(git config user.name) <$(git config user.email)>\""
-  recent        = branch --sort=-committerdate --format='%(refname:short) — %(committerdate:relative)'
-  root          = rev-parse --show-toplevel
-  wip           = "!git add -A && git commit -m 'wip: $(date +%Y-%m-%d)'"
 
 # ── URL shortcuts ─────────────────────────────────────────────────────────────
 [url "git@github.com:"]
@@ -105,3 +124,8 @@
   old        = red bold
   new        = green bold
   whitespace = red reverse
+
+# ── Machine-local overrides (gitignored) ─────────────────────────────────────
+# Drop any machine-specific config in ~/.dotfiles/.local/.gitconfig.local
+[include]
+  path = ~/.dotfiles/.local/.gitconfig.local

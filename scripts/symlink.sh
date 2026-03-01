@@ -54,6 +54,10 @@ link "$DOTFILES_DIR/zsh/.zshenv"  "$HOME/.zshenv"
 # ── Git ───────────────────────────────────────────────────────────────────────
 link "$DOTFILES_DIR/git/.gitconfig"         "$HOME/.gitconfig"
 link "$DOTFILES_DIR/git/.gitignore_global"  "$HOME/.gitignore_global"
+link "$DOTFILES_DIR/git/.gitmessage"        "$HOME/.gitmessage"
+
+# git commit template directory (hooks live here when templateDir is set)
+mkdir -p "$HOME/.git_template/hooks"
 
 # ── SSH ───────────────────────────────────────────────────────────────────────
 mkdir -p "$HOME/.ssh" "$HOME/.ssh/control"

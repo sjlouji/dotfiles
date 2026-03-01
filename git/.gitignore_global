@@ -21,9 +21,11 @@ Icon?
 .idea/
 *.swp
 *.swo
+*.sw[nop]
 *~
 *.orig
 .vim/
+.byebug_history
 
 # ── Environment / Secrets ─────────────────────────────────────────────────────
 .env
@@ -71,6 +73,15 @@ env/
 *.egg-info/
 dist/
 build/
+
+# ── Ruby / Rails ──────────────────────────────────────────────────────────────
+.bundle
+db/*.sqlite3
+log/*.log
+tmp/**/*
+rerun.txt
+/bower_components/
+/tags
 
 # ── Misc ─────────────────────────────────────────────────────────────────────
 Thumbs.db
