@@ -3,8 +3,13 @@
 # Keep this minimal — only things every shell process needs
 # =============================================================================
 
-# Dotfiles location (used before machine.sh is available)
-export DOTFILES_DIR="$HOME/.dotfiles"
+# Dotfiles location — resolved from the symlink target of this file.
+# Falls back to ~/.dotfiles if the symlink isn't set up yet.
+if [[ -L "$HOME/.zshenv" ]]; then
+  export DOTFILES_DIR="${$(readlink "$HOME/.zshenv")%/zsh/.zshenv}"
+else
+  export DOTFILES_DIR="$HOME/.dotfiles"
+fi
 
 # XDG base dirs (many tools respect these)
 export XDG_CONFIG_HOME="$HOME/.config"

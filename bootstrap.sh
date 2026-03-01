@@ -28,7 +28,7 @@ warn()    { printf '%b\n' "${YELLOW}⚠ $*${RESET}"; }
 error()   { printf '%b\n' "${RED}✗ $*${RESET}"; exit 1; }
 header()  { printf '%b\n' "\n${BOLD}${BLUE}━━━ $* ━━━${RESET}\n"; }
 
-DOTFILES_DIR="$HOME/.dotfiles"
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "$0")" && pwd)}"
 
 # ── Module dispatch (for existing setups) ─────────────────────────────────────
 # If any arguments are passed, run only those modules and exit.

@@ -6,9 +6,8 @@
 
 set -euo pipefail
 
-[[ -f "$HOME/.dotfiles/.local/machine.sh" ]] && source "$HOME/.dotfiles/.local/machine.sh"
-
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+[[ -f "$DOTFILES_DIR/.local/machine.sh" ]] && source "$DOTFILES_DIR/.local/machine.sh"
 BRANCH="main"
 LOG_FILE="/tmp/dotfiles-sync.log"
 CHECK_ONLY="${1:-}"

@@ -10,9 +10,8 @@
 
 set -euo pipefail
 
-[[ -f "$HOME/.dotfiles/.local/machine.sh" ]] && source "$HOME/.dotfiles/.local/machine.sh"
-
-DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+[[ -f "$DOTFILES_DIR/.local/machine.sh" ]] && source "$DOTFILES_DIR/.local/machine.sh"
 BRANCH="main"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'

@@ -4,7 +4,7 @@
 # =============================================================================
 
 # ── Machine Identity (must be first) ──────────────────────────────────────────
-[[ -f "$HOME/.dotfiles/.local/machine.sh" ]] && source "$HOME/.dotfiles/.local/machine.sh"
+[[ -f "$DOTFILES_DIR/.local/machine.sh" ]] && source "$DOTFILES_DIR/.local/machine.sh"
 
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
 BREW_PREFIX="${BREW_PREFIX:-/opt/homebrew}"

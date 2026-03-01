@@ -1,4 +1,4 @@
-DOTFILES_DIR := $(CURDIR)
+export DOTFILES_DIR := $(CURDIR)
 BOOTSTRAP    := $(DOTFILES_DIR)/bootstrap.sh
 
 .DEFAULT_GOAL := help

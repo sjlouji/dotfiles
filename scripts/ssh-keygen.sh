@@ -12,7 +12,8 @@
 
 set -euo pipefail
 
-[[ -f "$HOME/.dotfiles/.local/machine.sh" ]] && source "$HOME/.dotfiles/.local/machine.sh"
+DOTFILES_DIR="${DOTFILES_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
+[[ -f "$DOTFILES_DIR/.local/machine.sh" ]] && source "$DOTFILES_DIR/.local/machine.sh"
 
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 BLUE='\033[0;34m'; BOLD='\033[1m'; RESET='\033[0m'
@@ -84,7 +85,7 @@ fi
 
 # ── Update ssh_accounts.conf ──────────────────────────────────────────────────
 # Add or update this account's Host block in .local/ssh_accounts.conf
-mkdir -p "$HOME/.dotfiles/.local"
+mkdir -p "$DOTFILES_DIR/.local"
 
 if [[ -f "$SSH_ACCOUNTS_CONF" ]]; then
   # Remove existing block for this user if present, then append updated one
