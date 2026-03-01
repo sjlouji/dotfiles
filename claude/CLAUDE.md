@@ -7,12 +7,7 @@ Keep it current. It is the single source of truth for how Claude should work wit
 
 ## Identity
 
-- **Name:** Joan
-- **Role:** Product + SDE2 Engineer at Freehand
-- **Personal email:** sjlouji10@gmail.com
-- **Work email:** joanlouji@freehand.ai
-- **Personal GitHub:** sjlouji
-- **Work GitHub:** jlouji
+<!-- Personal details live in .local/CLAUDE.local.md (gitignored) — see .local/CLAUDE.local.md.template -->
 - **Machine setup:** Multi-Mac (personal + work), dotfiles synced via ~/.dotfiles
 
 ---

@@ -73,13 +73,13 @@
 #
 # ~/.dotfiles/.local/.gitconfig-work should contain:
 # [user]
-#   name  = Joan
-#   email = joanlouji@freehand.ai
+#   name  = Your Name
+#   email = you@work.com
 #
 # ~/.dotfiles/.local/.gitconfig-personal should contain:
 # [user]
-#   name  = Joan
-#   email = sjlouji10@gmail.com
+#   name  = Your Name
+#   email = you@personal.com
 #
 [includeIf "gitdir:~/work/"]
   path = ~/.dotfiles/.local/.gitconfig-work
