@@ -68,13 +68,18 @@
 [credential]
   helper = osxkeychain
 
-# ── Identity: loaded from machine.sh via shell, OR override per-directory ─────
-# These files are NOT in the repo — create them on each machine as needed.
-# Example: ~/.dotfiles/.local/.gitconfig-work
+# ── Identity: per-directory overrides ────────────────────────────────────────
+# These files live in .local/ (gitignored) — created by bootstrap.sh.
 #
+# ~/.dotfiles/.local/.gitconfig-work should contain:
 # [user]
-#   name  = Joan Work
-#   email = joan@company.com
+#   name  = Joan
+#   email = joanlouji@freehand.ai
+#
+# ~/.dotfiles/.local/.gitconfig-personal should contain:
+# [user]
+#   name  = Joan
+#   email = sjlouji10@gmail.com
 #
 [includeIf "gitdir:~/work/"]
   path = ~/.dotfiles/.local/.gitconfig-work

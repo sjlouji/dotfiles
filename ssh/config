@@ -5,7 +5,7 @@
 
 # ── Global defaults ───────────────────────────────────────────────────────────
 Host *
-  AddKeysToAgent          yes          # auto-add keys to ssh-agent / 1Password
+  AddKeysToAgent          yes          # auto-add keys to ssh-agent / Apple Keychain
   IdentitiesOnly          yes          # only use explicitly listed keys
   ServerAliveInterval     60           # keep connections alive
   ServerAliveCountMax     3
@@ -20,12 +20,12 @@ Host github.com
   User                    git
   IdentityFile            ~/.ssh/id_ed25519
 
-# ── GitHub (work — uncomment and update if using a separate work GitHub account)
+# ── GitHub (work — jlouji account) ───────────────────────────────────────────
 # Host github-work
 #   HostName              github.com
 #   User                  git
 #   IdentityFile          ~/.ssh/id_ed25519_work
-#   # Usage: git clone git@github-work:org/repo.git
+#   # Usage: git clone git@github-work:jlouji/repo.git
 
 # ── Example: Jump host / bastion ──────────────────────────────────────────────
 # Host bastion
@@ -40,7 +40,6 @@ Host github.com
 #   ProxyJump             bastion
 #   IdentityFile          ~/.ssh/id_ed25519
 
-# ── 1Password SSH Agent (enable if using 1Password to manage SSH keys) ────────
-# Uncomment the line below and remove IdentityFile lines above to use 1Password
-# Host *
-#   IdentityAgent         "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+# ── Apple Keychain SSH Agent ──────────────────────────────────────────────────
+# Keys are stored and managed via Apple Keychain.
+# ssh-add --apple-use-keychain ~/.ssh/id_ed25519 to store passphrase in Keychain.

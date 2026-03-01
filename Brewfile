@@ -53,10 +53,6 @@ brew "dockutil"         # manage Dock items from CLI
 brew "switchaudio-osx"  # switch audio devices
 brew "pinentry-mac"     # GPG PIN entry
 
-# ── Image / Media ─────────────────────────────────────────────────────────────
-brew "imagemagick"      # image conversion & editing
-brew "ffmpeg"           # media conversion
-
 # ── Apps (Casks) ──────────────────────────────────────────────────────────────
 cask "visual-studio-code"
 cask "iterm2"
@@ -73,7 +69,6 @@ cask "cleanmymac"
 cask "istat-menus"      # system stats in menu bar
 cask "tableplus"        # DB GUI
 cask "proxyman"         # HTTP proxy / debugger
-cask "fig"              # terminal autocomplete (now Amazon Q)
 
 # ── Fonts ─────────────────────────────────────────────────────────────────────
 cask "font-jetbrains-mono-nerd-font"
