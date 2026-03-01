@@ -56,14 +56,9 @@ brew "switchaudio-osx"  # switch audio output devices from terminal
 
 # Editors & Terminals
 cask "visual-studio-code"           # primary editor
-cask "cursor"                       # AI-first code editor (VS Code fork)
-cask "warp"                         # AI terminal with autocomplete and natural language
 
 # Containers & Local Dev
 cask "orbstack"                     # lightweight Docker + Linux VMs (replaces Docker Desktop)
-
-# API Testing
-cask "insomnia"                     # API client for REST and GraphQL testing
 
 # Design & Product
 cask "figma"                        # UI/UX design — essential for product work
