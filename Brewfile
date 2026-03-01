@@ -72,6 +72,7 @@ cask "loom"                         # quick screen recordings for async comms an
 
 # AI
 cask "claude"                       # Claude desktop app
+cask "claude-code"                  # Claude Code — agentic coding in the terminal
 cask "chatgpt"                      # ChatGPT desktop app
 
 # Communication & Productivity

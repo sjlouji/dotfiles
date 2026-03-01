@@ -6,7 +6,17 @@ Paste this into Terminal and follow the prompts:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/sjlouji/dotfiles/main/bootstrap.sh)"
 ```
 
-It will ask one question: **personal** or **work** Mac? Everything else happens automatically — Homebrew, Oh My Zsh, all apps, settings, and scripts.
+It will ask a few questions to get you set up:
+
+1. **Machine role** — personal or work Mac?
+2. **Personal git identity** — your name and personal email (used in `~/personal/` and `~/projects/`)
+3. **Work git identity** — your name and work email (used in `~/work/`)
+4. **GitHub login** — opens a browser window to authenticate once
+5. **SSH key** — optionally auto-adds your new SSH key to GitHub
+
+Everything else happens automatically — Homebrew, Oh My Zsh, all apps, settings, symlinks, and scripts.
+
+Git will use the right identity automatically based on which folder your repo lives in. No manual switching needed.
 
 ---
 
@@ -14,25 +24,21 @@ It will ask one question: **personal** or **work** Mac? Everything else happens 
 
 Once bootstrap finishes, do these three things:
 
-**1. Set up your git identity**
+**1. Add your API tokens for Claude integrations**
 
-Create these two files in `.local/` (they stay off GitHub):
-
-```sh
-# ~/.dotfiles/.local/.gitconfig-personal
-[user]
-  name  = Joan
-  email = name@domain.com
-```
+Bootstrap creates a token file for you at `~/.dotfiles/.local/mcp.env`. Open it and fill in the services you use:
 
 ```sh
-# ~/.dotfiles/.local/.gitconfig-work
-[user]
-  name  = Joan
-  email = name-work@domain.com
+open ~/.dotfiles/.local/mcp.env
 ```
 
-Git will automatically use the right one based on which folder your repo is in (`~/personal/` → personal, `~/work/` → work).
+Then apply the config:
+
+```sh
+setup-mcp
+```
+
+This wires up GitHub, Figma, Slack, and Notion directly into Claude. You only need tokens for the services you actually use — skip the rest.
 
 **2. Set up screenshots and recordings**
 
@@ -67,7 +73,7 @@ This audits everything — symlinks, git identity, SSH, scripts, sync, screensho
 | `bootstrap.sh` | Run once on a new Mac to set everything up |
 | `Brewfile` | Every app and CLI tool I use |
 | `zsh/` | Shell config, shortcuts, and aliases |
-| `git/` | Git settings and global ignore rules |
+| `git/` | Git settings, global ignore rules, and commit template |
 | `ssh/` | SSH connection config (no private keys) |
 | `vscode/` | VS Code settings, keybindings, and extensions |
 | `claude/` | Claude AI instructions and settings |
@@ -76,6 +82,20 @@ This audits everything — symlinks, git identity, SSH, scripts, sync, screensho
 | `sync/` | Keeps the repo synced across Macs |
 | `scripts/` | One-time setup helpers |
 | `.local/` | Your machine-specific settings — never pushed to GitHub |
+
+---
+
+## How git identity works
+
+Bootstrap collects both your personal and work details upfront and writes two files into `.local/` (gitignored, never pushed):
+
+```
+.local/
+  .gitconfig-personal   ← used automatically in ~/personal/ and ~/projects/
+  .gitconfig-work       ← used automatically in ~/work/
+```
+
+You never have to set `user.email` per repo. Just put your repos in the right folder and git handles it. Run `git whoami` in any repo to confirm which identity is active.
 
 ---
 
@@ -93,9 +113,9 @@ The repo also syncs automatically in the background every 30 minutes. If there a
 
 ## Machine-specific settings
 
-The `.local/` folder is for things that differ between Macs — your name, email, paths, and any extras. This folder is **never uploaded to GitHub**.
+The `.local/` folder is for things that differ between Macs — your name, emails, paths, and any extras. This folder is **never uploaded to GitHub**.
 
-`bootstrap.sh` creates it automatically when you set up a new Mac. If you want to override anything just for one machine, add it to `.local/.zshrc.local`.
+`bootstrap.sh` creates it automatically when you set up a new Mac. To override anything just for one machine, add it to `.local/.zshrc.local`.
 
 ---
 
@@ -118,5 +138,7 @@ All scripts in `bin/` work as normal terminal commands. See [bin/README.md](bin/
 **New app or tool** → add to `Brewfile`, run `brew bundle`, then `dsync`.
 
 **New shell alias** → add to `zsh/aliases.zsh`, then `dsync`.
+
+**New git commit habit** → edit `git/.gitmessage` — it opens every time you run `git commit`.
 
 **Machine-only change** → add to `.local/.zshrc.local` (stays on this Mac only).

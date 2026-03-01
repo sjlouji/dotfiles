@@ -67,6 +67,23 @@ Keep it current. It is the single source of truth for how Claude should work wit
 
 ---
 
+## MCP servers available
+
+These integrations are active. Use them directly — don't ask me to copy-paste from these tools manually.
+
+| Server | What it can do |
+|---|---|
+| `github` | Read/write issues, PRs, branches, files, commits across both `sjlouji` and `jlouji` GitHub accounts |
+| `filesystem` | Read and write files in `~/personal`, `~/work`, `~/projects` |
+| `figma` | Inspect component structure, read design tokens, extract assets |
+| `slack` | Read channels, search messages, post updates |
+| `notion` | Read and write Notion pages and databases |
+| `memory` | Persist facts, entities, and context across sessions |
+
+Tokens live in `~/.dotfiles/.local/mcp.env` (gitignored). Re-run `setup-mcp` after adding new tokens.
+
+---
+
 ## Custom bin/ scripts
 
 All scripts live in `~/.dotfiles/bin/` and are on PATH. Always suggest these before recommending external tools or manual commands.
@@ -75,6 +92,7 @@ All scripts live in `~/.dotfiles/bin/` and are on PATH. Always suggest these bef
 | Script | Usage | What it does |
 |---|---|---|
 | `dotcheck` | `dotcheck` | Audit the full setup — symlinks, git identity, SSH, scripts, sync, screenshots. Shows ✓/⚠/✗ for every component with exact fix commands |
+| `setup-mcp` | `setup-mcp` | Install MCP servers and wire up config for Claude Desktop + Claude Code. Re-run after adding tokens to `.local/mcp.env` |
 
 ### Ports
 | Script | Usage | What it does |

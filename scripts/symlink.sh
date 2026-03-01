@@ -70,6 +70,11 @@ mkdir -p "$HOME/.claude"
 link "$DOTFILES_DIR/claude/CLAUDE.md"       "$HOME/.claude/CLAUDE.md"
 link "$DOTFILES_DIR/claude/settings.json"   "$HOME/.claude/settings.json"
 
+# Claude Desktop MCP config
+CLAUDE_DESKTOP_DIR="$HOME/Library/Application Support/Claude"
+mkdir -p "$CLAUDE_DESKTOP_DIR"
+link "$DOTFILES_DIR/claude/mcp.json" "$CLAUDE_DESKTOP_DIR/claude_desktop_config.json"
+
 # ── VS Code ───────────────────────────────────────────────────────────────────
 VSCODE_DIR="$HOME/Library/Application Support/Code/User"
 mkdir -p "$VSCODE_DIR"

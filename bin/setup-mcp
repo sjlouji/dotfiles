@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Install and configure MCP servers for Claude Desktop + Claude Code
+# Usage: setup-mcp
+exec bash "${DOTFILES_DIR:-$HOME/.dotfiles}/scripts/setup-mcp.sh" "$@"

@@ -63,12 +63,23 @@ else
     *) MACHINE_ROLE="personal" ;;
   esac
 
+  echo ""
+  echo -e "${BOLD}Personal git identity${RESET} (used in ~/personal/ and ~/projects/)"
+  read -rp "  Name:  " PERSONAL_GIT_NAME
+  read -rp "  Email: " PERSONAL_GIT_EMAIL
+
+  echo ""
+  echo -e "${BOLD}Work git identity${RESET} (used in ~/work/)"
+  read -rp "  Name:  " WORK_GIT_NAME
+  read -rp "  Email: " WORK_GIT_EMAIL
+
+  # Primary identity = whichever role this machine is
   if [[ "$MACHINE_ROLE" == "work" ]]; then
-    read -rp "  Work git email: " GIT_EMAIL
-    read -rp "  Work git name:  " GIT_NAME
+    GIT_NAME="$WORK_GIT_NAME"
+    GIT_EMAIL="$WORK_GIT_EMAIL"
   else
-    read -rp "  Personal git email: " GIT_EMAIL
-    read -rp "  Personal git name:  " GIT_NAME
+    GIT_NAME="$PERSONAL_GIT_NAME"
+    GIT_EMAIL="$PERSONAL_GIT_EMAIL"
   fi
 
   success "Role: $MACHINE_ROLE"
@@ -119,7 +130,7 @@ else
   success "Dotfiles up to date"
 fi
 
-# ── 6. Write machine.sh ───────────────────────────────────────────────────────
+# ── 6. Write machine.sh + git identity files ──────────────────────────────────
 header "Writing machine identity"
 
 mkdir -p "$DOTFILES_DIR/.local"
@@ -133,11 +144,49 @@ export MACHINE_NAME="${HOSTNAME}"
 export MACHINE_USER="${CURRENT_USER}"
 export MACHINE_ARCH="${ARCH}"
 export BREW_PREFIX="${BREW_PREFIX}"
-export GIT_EMAIL="${GIT_EMAIL:-}"
 export GIT_NAME="${GIT_NAME:-}"
+export GIT_EMAIL="${GIT_EMAIL:-}"
+export PERSONAL_GIT_NAME="${PERSONAL_GIT_NAME:-$GIT_NAME}"
+export PERSONAL_GIT_EMAIL="${PERSONAL_GIT_EMAIL:-$GIT_EMAIL}"
+export WORK_GIT_NAME="${WORK_GIT_NAME:-$GIT_NAME}"
+export WORK_GIT_EMAIL="${WORK_GIT_EMAIL:-$GIT_EMAIL}"
 export DOTFILES_DIR="${DOTFILES_DIR}"
 EOF
   success "machine.sh written"
+fi
+
+# Write both identity files — used by [includeIf] in .gitconfig
+# Personal identity (~/personal/, ~/projects/)
+if [[ ! -f "$DOTFILES_DIR/.local/.gitconfig-personal" ]]; then
+  cat > "$DOTFILES_DIR/.local/.gitconfig-personal" <<EOF
+[user]
+  name  = ${PERSONAL_GIT_NAME:-$GIT_NAME}
+  email = ${PERSONAL_GIT_EMAIL:-$GIT_EMAIL}
+EOF
+  success "Git identity written → .gitconfig-personal"
+else
+  warn ".gitconfig-personal already exists — skipping"
+fi
+
+# Work identity (~/work/)
+if [[ ! -f "$DOTFILES_DIR/.local/.gitconfig-work" ]]; then
+  cat > "$DOTFILES_DIR/.local/.gitconfig-work" <<EOF
+[user]
+  name  = ${WORK_GIT_NAME:-$GIT_NAME}
+  email = ${WORK_GIT_EMAIL:-$GIT_EMAIL}
+EOF
+  success "Git identity written → .gitconfig-work"
+else
+  warn ".gitconfig-work already exists — skipping"
+fi
+
+# Also write a blank .gitconfig.local for machine-specific overrides
+if [[ ! -f "$DOTFILES_DIR/.local/.gitconfig.local" ]]; then
+  cat > "$DOTFILES_DIR/.local/.gitconfig.local" <<EOF
+# Machine-local git config for ${HOSTNAME}
+# Add any machine-specific git settings here
+EOF
+  success ".gitconfig.local created"
 fi
 
 # ── 7. Homebrew Bundle ────────────────────────────────────────────────────────
@@ -213,13 +262,18 @@ else
   warn "VS Code 'code' CLI not found — skipping extensions (install VS Code first)"
 fi
 
-# ── 12. macOS Defaults ────────────────────────────────────────────────────────
+# ── 12. MCP Servers ───────────────────────────────────────────────────────────
+header "MCP servers (Claude integrations)"
+
+bash "$DOTFILES_DIR/scripts/setup-mcp.sh" || warn "MCP setup had issues — run 'setup-mcp' manually after adding tokens"
+
+# ── 13. macOS Defaults ────────────────────────────────────────────────────────
 header "Applying macOS defaults"
 
 bash "$DOTFILES_DIR/macos/defaults.sh"
 success "macOS defaults applied"
 
-# ── 13. SSH Key ───────────────────────────────────────────────────────────────
+# ── 14. SSH Key ───────────────────────────────────────────────────────────────
 header "SSH key"
 
 if [[ ! -f "$HOME/.ssh/id_ed25519" ]]; then
@@ -228,7 +282,7 @@ else
   success "SSH key already exists at ~/.ssh/id_ed25519"
 fi
 
-# ── 14. Register Auto-Sync LaunchAgent ───────────────────────────────────────
+# ── 15. Register Auto-Sync LaunchAgent ───────────────────────────────────────
 header "Dotfiles auto-sync"
 
 PLIST_SRC="$DOTFILES_DIR/macos/com.dotfiles.sync.plist"
@@ -240,7 +294,7 @@ if [[ -f "$PLIST_SRC" ]]; then
   success "Auto-sync LaunchAgent registered"
 fi
 
-# ── 15. Install git hooks ─────────────────────────────────────────────────────
+# ── 16. Install git hooks ─────────────────────────────────────────────────────
 header "Git hooks"
 
 GIT_HOOKS_DIR="$DOTFILES_DIR/.git/hooks"
