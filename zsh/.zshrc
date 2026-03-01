@@ -17,17 +17,26 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="robbyrussell"           # change to your preferred theme
 
+# Homebrew-managed completion dirs are group-writable by design — suppress the
+# OMZ security check so it doesn't block startup on a fresh Homebrew install
+export ZSH_DISABLE_COMPFIX=true
+
+# fzf: set base path before OMZ loads, but only add the plugin if fzf exists
+# (avoids errors on a fresh Mac before brew bundle has run)
+export FZF_BASE="$BREW_PREFIX/opt/fzf"
+
 # Plugins — keep this list lean, slow plugins hurt startup time
+# Note: direnv is handled below with an explicit guard (no OMZ plugin needed)
 plugins=(
   git
   macos
   z
-  fzf
   zsh-autosuggestions
   zsh-syntax-highlighting
   you-should-use
-  direnv
 )
+# Add fzf plugin only when fzf is actually installed
+[[ -d "$FZF_BASE" ]] && plugins+=(fzf)
 
 source "$ZSH/oh-my-zsh.sh"
 

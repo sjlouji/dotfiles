@@ -42,7 +42,6 @@ brew "ollama"           # run AI models locally (Llama, Mistral, etc.)
 # ── API & Networking ──────────────────────────────────────────────────────────
 brew "httpie"           # human-friendly HTTP client (easier than curl)
 brew "nmap"             # network scanner — useful for debugging connectivity
-brew "dog"              # better DNS lookup tool
 
 # ── Shell ─────────────────────────────────────────────────────────────────────
 brew "zsh"

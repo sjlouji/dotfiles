@@ -23,7 +23,7 @@ dsync status    # show what's different between this Mac and GitHub
 
 ## How auto-sync works
 
-1. The macOS LaunchAgent (`macos/com.dotfiles.sync.plist`) runs `auto-sync.sh` every 30 minutes
+1. A LaunchAgent runs `auto-sync.sh` every 30 minutes
 2. It checks for new commits on GitHub
 3. If there are updates and no local uncommitted changes, it pulls automatically
 4. If there are local changes, it skips and logs a message instead — it never overwrites your work

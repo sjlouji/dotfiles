@@ -6,15 +6,20 @@ Paste this into Terminal and follow the prompts:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/sjlouji/dotfiles/main/bootstrap.sh)"
 ```
 
-It will ask a few questions to get you set up:
+It will ask which modules to configure, then run only those:
 
-1. **Machine role** — personal or work Mac?
-2. **Personal git identity** — your name and personal email (used in `~/personal/` and `~/projects/`)
-3. **Work git identity** — your name and work email (used in `~/work/`)
-4. **GitHub login** — opens a browser window to authenticate once
-5. **SSH key** — optionally auto-adds your new SSH key to GitHub
+```
+packages  — Homebrew bundle (formulae, casks, fonts)
+shell     — Oh My Zsh, plugins, default shell
+symlinks  — dotfile symlinks
+git       — git identity files per account
+ssh       — SSH keys for GitHub accounts
+claude    — Claude / MCP integrations
+vscode    — VS Code extensions
+all       — everything above
+```
 
-Everything else happens automatically — Homebrew, Oh My Zsh, all apps, settings, symlinks, and scripts.
+Everything else happens automatically — Homebrew, Oh My Zsh, all apps, symlinks, and scripts.
 
 Git will use the right identity automatically based on which folder your repo lives in. No manual switching needed.
 
@@ -77,7 +82,6 @@ This audits everything — symlinks, git identity, SSH, scripts, sync, screensho
 | `ssh/` | SSH connection config (no private keys) |
 | `vscode/` | VS Code settings, keybindings, and extensions |
 | `claude/` | Claude AI instructions and settings |
-| `macos/` | Mac system preferences applied automatically |
 | `bin/` | Custom terminal commands available everywhere |
 | `sync/` | Keeps the repo synced across Macs |
 | `scripts/` | One-time setup helpers |
@@ -87,12 +91,12 @@ This audits everything — symlinks, git identity, SSH, scripts, sync, screensho
 
 ## How git identity works
 
-Bootstrap collects both your personal and work details upfront and writes two files into `.local/` (gitignored, never pushed):
+Bootstrap collects your GitHub accounts and writes per-account identity files into `.local/` (gitignored, never pushed):
 
 ```
 .local/
-  .gitconfig-personal   ← used automatically in ~/personal/ and ~/projects/
-  .gitconfig-work       ← used automatically in ~/work/
+  .gitconfig-sjlouji   ← used automatically in ~/personal/
+  .gitconfig-jlouji    ← used automatically in ~/work/
 ```
 
 You never have to set `user.email` per repo. Just put your repos in the right folder and git handles it. Run `git whoami` in any repo to confirm which identity is active.
