@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# gpr — Interactive PR checkout using gh + fzf
+set -euo pipefail
+[[ "${1:-}" == "--help" ]] && { echo "Usage: gpr"; echo "List open PRs and check one out interactively."; exit 0; }
+command -v gh &>/dev/null || { echo "✗ gh CLI not installed"; exit 1; }
+command -v fzf &>/dev/null || { echo "✗ fzf not installed"; exit 1; }
+PR=$(gh pr list --json number,title,author,headRefName \
+  --template '{{range .}}#{{.number}} | {{.title}} | {{.author.login}} | {{.headRefName}}{{"\n"}}{{end}}' \
+  | fzf --prompt="Select PR to checkout: " --height=40% --reverse)
+[[ -z "$PR" ]] && { echo "Cancelled."; exit 0; }
+PR_NUMBER=$(echo "$PR" | awk -F'|' '{print $1}' | tr -d '#[:space:]')
+echo "▶ Checking out PR #$PR_NUMBER..."
+gh pr checkout "$PR_NUMBER"
+echo "✓ Checked out PR #$PR_NUMBER"

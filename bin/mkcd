@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# mkcd — mkdir + cd in one step
+# Usage: mkcd new-dir
+set -euo pipefail
+
+if [[ "${1:-}" == "--help" || -z "${1:-}" ]]; then
+  echo "Usage: mkcd <directory>"
+  echo "Creates a directory and changes into it."
+  exit 0
+fi
+
+mkdir -p "$1" && cd "$1"
+echo "✓ Created and entered: $(pwd)"

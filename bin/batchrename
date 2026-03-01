@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# batchrename — Interactively rename files in current directory using a sed pattern
+# Usage: batchrename 's/old/new/g'
+set -euo pipefail
+
+if [[ "${1:-}" == "--help" || -z "${1:-}" ]]; then
+  echo "Usage: batchrename '<sed_pattern>'"
+  echo "Example: batchrename 's/IMG_/photo_/g'"
+  echo "Shows a preview before renaming."
+  exit 0
+fi
+
+PATTERN="$1"
+echo "▶ Preview (no changes yet):"
+for f in *; do
+  newname=$(echo "$f" | sed "$PATTERN")
+  [[ "$f" != "$newname" ]] && echo "  $f  →  $newname"
+done
+echo ""
+read -rp "Apply renames? [y/N]: " CONFIRM
+[[ "$CONFIRM" =~ ^[Yy]$ ]] || { echo "Cancelled."; exit 0; }
+for f in *; do
+  newname=$(echo "$f" | sed "$PATTERN")
+  [[ "$f" != "$newname" ]] && mv "$f" "$newname" && echo "  Renamed: $f → $newname"
+done
+echo "✓ Done"

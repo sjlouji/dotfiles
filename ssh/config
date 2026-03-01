@@ -1,0 +1,46 @@
+# =============================================================================
+# ssh/config — SSH client configuration
+# Symlinked to ~/.ssh/config by symlink.sh
+# =============================================================================
+
+# ── Global defaults ───────────────────────────────────────────────────────────
+Host *
+  AddKeysToAgent          yes          # auto-add keys to ssh-agent / 1Password
+  IdentitiesOnly          yes          # only use explicitly listed keys
+  ServerAliveInterval     60           # keep connections alive
+  ServerAliveCountMax     3
+  Compression             yes
+  ControlMaster           auto         # connection multiplexing
+  ControlPath             ~/.ssh/control/%r@%h:%p
+  ControlPersist          10m
+
+# ── GitHub (personal) ─────────────────────────────────────────────────────────
+Host github.com
+  HostName                github.com
+  User                    git
+  IdentityFile            ~/.ssh/id_ed25519
+
+# ── GitHub (work — uncomment and update if using a separate work GitHub account)
+# Host github-work
+#   HostName              github.com
+#   User                  git
+#   IdentityFile          ~/.ssh/id_ed25519_work
+#   # Usage: git clone git@github-work:org/repo.git
+
+# ── Example: Jump host / bastion ──────────────────────────────────────────────
+# Host bastion
+#   HostName              bastion.example.com
+#   User                  YOUR_USERNAME
+#   IdentityFile          ~/.ssh/id_ed25519
+#   ForwardAgent          yes
+
+# Host internal-server
+#   HostName              10.0.0.1
+#   User                  YOUR_USERNAME
+#   ProxyJump             bastion
+#   IdentityFile          ~/.ssh/id_ed25519
+
+# ── 1Password SSH Agent (enable if using 1Password to manage SSH keys) ────────
+# Uncomment the line below and remove IdentityFile lines above to use 1Password
+# Host *
+#   IdentityAgent         "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"

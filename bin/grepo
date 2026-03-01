@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# grepo — Clone all repos from a GitHub org/user into a local directory
+# Usage: grepo <org-or-user> [destination-dir]
+set -euo pipefail
+if [[ "${1:-}" == "--help" || -z "${1:-}" ]]; then
+  echo "Usage: grepo <org-or-user> [destination-dir]"
+  echo "Example: grepo myorg ~/work/myorg"
+  exit 0
+fi
+ORG="$1"
+DEST="${2:-$HOME/repos/$ORG}"
+command -v gh &>/dev/null || { echo "✗ gh CLI required"; exit 1; }
+mkdir -p "$DEST"
+echo "▶ Cloning all repos from $ORG into $DEST..."
+gh repo list "$ORG" --limit 200 --json nameWithOwner --template '{{range .}}{{.nameWithOwner}}{{"\n"}}{{end}}' \
+  | while read -r repo; do
+    name=$(basename "$repo")
+    if [[ -d "$DEST/$name" ]]; then
+      echo "  Updating: $name"
+      git -C "$DEST/$name" pull --rebase --quiet 2>/dev/null || true
+    else
+      echo "  Cloning:  $name"
+      gh repo clone "$repo" "$DEST/$name" -- --quiet 2>/dev/null || true
+    fi
+  done
+echo "✓ Done. Repos in $DEST"

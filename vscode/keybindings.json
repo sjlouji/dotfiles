@@ -1,0 +1,42 @@
+[
+  // =============================================================================
+  // VS Code keybindings
+  // =============================================================================
+
+  // ── Terminal ──────────────────────────────────────────────────────────────
+  { "key": "cmd+`",           "command": "workbench.action.terminal.toggleTerminal" },
+  { "key": "cmd+shift+`",     "command": "workbench.action.terminal.new" },
+  { "key": "cmd+shift+]",     "command": "workbench.action.terminal.focusNext" },
+  { "key": "cmd+shift+[",     "command": "workbench.action.terminal.focusPrevious" },
+
+  // ── Editor ────────────────────────────────────────────────────────────────
+  { "key": "cmd+shift+d",     "command": "editor.action.copyLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly" },
+  { "key": "alt+up",          "command": "editor.action.moveLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly" },
+  { "key": "alt+down",        "command": "editor.action.moveLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly" },
+  { "key": "cmd+shift+k",     "command": "editor.action.deleteLines",
+    "when": "editorTextFocus && !editorReadonly" },
+  { "key": "cmd+d",           "command": "editor.action.addSelectionToNextFindMatch" },
+  { "key": "cmd+k cmd+s",     "command": "workbench.action.openGlobalKeybindings" },
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+  { "key": "cmd+shift+e",     "command": "workbench.view.explorer" },
+  { "key": "cmd+shift+f",     "command": "workbench.view.search" },
+  { "key": "cmd+shift+g",     "command": "workbench.view.scm" },
+  { "key": "cmd+shift+x",     "command": "workbench.view.extensions" },
+  { "key": "ctrl+tab",        "command": "workbench.action.quickOpenPreviousRecentlyUsedEditorInGroup" },
+  { "key": "ctrl+shift+tab",  "command": "workbench.action.quickOpenLeastRecentlyUsedEditorInGroup" },
+
+  // ── Sidebar ───────────────────────────────────────────────────────────────
+  { "key": "cmd+b",           "command": "workbench.action.toggleSidebarVisibility" },
+  { "key": "cmd+shift+b",     "command": "workbench.action.togglePanel" },
+
+  // ── Format ────────────────────────────────────────────────────────────────
+  { "key": "cmd+shift+i",     "command": "editor.action.formatDocument",
+    "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly" },
+
+  // ── Zen / Focus ───────────────────────────────────────────────────────────
+  { "key": "cmd+k z",         "command": "workbench.action.toggleZenMode" }
+]

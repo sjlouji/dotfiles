@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# gnuke — Delete all local branches already merged into main/master
+set -euo pipefail
+[[ "${1:-}" == "--help" ]] && { echo "Usage: gnuke [--dry-run]"; echo "Deletes local branches merged into main or master."; exit 0; }
+DRY="${1:-}"
+DEFAULT=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+echo "▶ Merged branches (relative to $DEFAULT):"
+BRANCHES=$(git branch --merged "$DEFAULT" | grep -vE "^\*|$DEFAULT|master|main|develop" | sed 's/^[[:space:]]*//' || true)
+if [[ -z "$BRANCHES" ]]; then echo "  Nothing to clean up."; exit 0; fi
+echo "$BRANCHES" | while read -r b; do echo "  - $b"; done
+echo ""
+[[ "$DRY" == "--dry-run" ]] && { echo "(dry run — no branches deleted)"; exit 0; }
+read -rp "Delete these branches? [y/N]: " CONFIRM
+[[ "$CONFIRM" =~ ^[Yy]$ ]] || { echo "Cancelled."; exit 0; }
+echo "$BRANCHES" | xargs git branch -d
+echo "✓ Done"

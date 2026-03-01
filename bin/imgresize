@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# imgresize — Resize an image using macOS built-in sips (no deps)
+# Usage: imgresize image.png 800
+set -euo pipefail
+
+if [[ "${1:-}" == "--help" || -z "${1:-}" || -z "${2:-}" ]]; then
+  echo "Usage: imgresize <image> <max_width_px>"
+  echo "Example: imgresize photo.png 800"
+  echo "Resizes proportionally. Uses sips (built-in macOS tool, no dependencies)."
+  exit 0
+fi
+
+SRC="$1"
+WIDTH="$2"
+EXT="${SRC##*.}"
+OUT="${SRC%.*}_${WIDTH}px.${EXT}"
+cp "$SRC" "$OUT"
+sips -Z "$WIDTH" "$OUT" --out "$OUT" &>/dev/null
+echo "✓ Resized → $OUT ($(sips -g pixelWidth -g pixelHeight "$OUT" | awk '/pixel/{printf $2" "}'))"

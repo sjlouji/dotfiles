@@ -1,0 +1,102 @@
+# =============================================================================
+# .gitconfig — Global git config
+# Machine-specific identity is injected via .local/machine.sh at shell start,
+# then picked up by the [includeIf] blocks below.
+# =============================================================================
+
+[core]
+  editor        = code --wait
+  pager         = delta
+  excludesFile  = ~/.dotfiles/git/.gitignore_global
+  autocrlf      = input
+  whitespace    = trailing-space,space-before-tab
+
+[init]
+  defaultBranch = main
+
+[pull]
+  rebase = true
+
+[push]
+  default       = current
+  autoSetupRemote = true
+
+[rebase]
+  autostash = true
+
+[fetch]
+  prune = true
+
+[merge]
+  conflictstyle = zdiff3
+
+[diff]
+  algorithm     = histogram
+  colorMoved    = default
+
+# ── Delta (diff pager) ────────────────────────────────────────────────────────
+[interactive]
+  diffFilter    = delta --color-only
+
+[delta]
+  navigate      = true
+  light         = false
+  side-by-side  = true
+  line-numbers  = true
+  syntax-theme  = Dracula
+
+# ── Aliases ───────────────────────────────────────────────────────────────────
+[alias]
+  st            = status -sb
+  lg            = log --oneline --decorate --graph
+  lga           = log --oneline --decorate --graph --all
+  aliases       = config --get-regexp alias
+  undo          = reset HEAD~1 --soft
+  unstage       = restore --staged
+  discard       = restore
+  branch-clean  = "!git branch --merged main | grep -v 'main\\|\\*' | xargs git branch -d"
+  whoami        = "!echo \"$(git config user.name) <$(git config user.email)>\""
+  recent        = branch --sort=-committerdate --format='%(refname:short) — %(committerdate:relative)'
+  root          = rev-parse --show-toplevel
+  wip           = "!git add -A && git commit -m 'wip: $(date +%Y-%m-%d)'"
+
+# ── URL shortcuts ─────────────────────────────────────────────────────────────
+[url "git@github.com:"]
+  insteadOf = https://github.com/
+
+# ── Credential helpers ────────────────────────────────────────────────────────
+[credential]
+  helper = osxkeychain
+
+# ── Identity: loaded from machine.sh via shell, OR override per-directory ─────
+# These files are NOT in the repo — create them on each machine as needed.
+# Example: ~/.dotfiles/.local/.gitconfig-work
+#
+# [user]
+#   name  = Joan Work
+#   email = joan@company.com
+#
+[includeIf "gitdir:~/work/"]
+  path = ~/.dotfiles/.local/.gitconfig-work
+
+[includeIf "gitdir:~/personal/"]
+  path = ~/.dotfiles/.local/.gitconfig-personal
+
+[includeIf "gitdir:~/projects/"]
+  path = ~/.dotfiles/.local/.gitconfig-personal
+
+# ── Colors ───────────────────────────────────────────────────────────────────
+[color]
+  ui = auto
+
+[color "branch"]
+  current = yellow reverse
+  local   = yellow
+  remote  = green
+
+[color "diff"]
+  meta       = yellow bold
+  frag       = magenta bold
+  old        = red bold
+  new        = green bold
+  whitespace = red reverse

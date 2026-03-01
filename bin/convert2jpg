@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# convert2jpg — Batch convert PNG/HEIC/WEBP images to JPG in current directory
+# Usage: convert2jpg [quality 1-100]
+set -euo pipefail
+
+if [[ "${1:-}" == "--help" ]]; then
+  echo "Usage: convert2jpg [quality]"
+  echo "Converts all PNG, HEIC, WEBP files in current dir to JPG."
+  echo "Quality: 1-100 (default: 85)"
+  exit 0
+fi
+
+QUALITY="${1:-85}"
+COUNT=0
+for f in *.png *.PNG *.heic *.HEIC *.webp *.WEBP 2>/dev/null; do
+  [[ -f "$f" ]] || continue
+  OUT="${f%.*}.jpg"
+  sips -s format jpeg -s formatOptions "$QUALITY" "$f" --out "$OUT" &>/dev/null
+  echo "  ✓ $f → $OUT"
+  COUNT=$((COUNT + 1))
+done
+[[ "$COUNT" -eq 0 ]] && echo "No PNG/HEIC/WEBP files found." || echo "✓ Converted $COUNT file(s)"

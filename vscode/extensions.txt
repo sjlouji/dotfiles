@@ -1,0 +1,61 @@
+# =============================================================================
+# VS Code Extensions
+# Installed by bootstrap.sh via: code --install-extension <id>
+# Lines starting with # are ignored
+# =============================================================================
+
+# ── Themes & Icons ────────────────────────────────────────────────────────────
+zhuangtongfa.material-theme
+pkief.material-icon-theme
+
+# ── Editor Enhancements ───────────────────────────────────────────────────────
+esbenp.prettier-vscode
+editorconfig.editorconfig
+usernamehw.errorlens
+streetsidesoftware.code-spell-checker
+wayou.vscode-todo-highlight
+gruntfuggly.todo-tree
+foxundermoon.shell-format
+
+# ── Git ──────────────────────────────────────────────────────────────────────
+eamodio.gitlens
+mhutchie.git-graph
+donjayamanne.githistory
+
+# ── AI ────────────────────────────────────────────────────────────────────────
+github.copilot
+github.copilot-chat
+
+# ── Languages ────────────────────────────────────────────────────────────────
+# Python
+ms-python.python
+ms-python.black-formatter
+ms-python.isort
+ms-python.pylint
+
+# JavaScript / TypeScript
+dbaeumer.vscode-eslint
+ms-vscode.vscode-typescript-next
+
+# Markdown
+yzhang.markdown-all-in-one
+davidanson.vscode-markdownlint
+shd101wyy.markdown-preview-enhanced
+
+# Shell
+timonwong.shellcheck
+
+# YAML / TOML / JSON
+redhat.vscode-yaml
+tamasfe.even-better-toml
+
+# Docker
+ms-azuretools.vscode-docker
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+christian-kohler.path-intellisense
+naumovs.color-highlight
+mechatroner.rainbow-csv
+aaron-bond.better-comments
+alefragnani.bookmarks
+formulahendry.code-runner

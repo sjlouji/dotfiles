@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# =============================================================================
+# post-merge hook — Re-apply symlinks after a pull/merge
+# Installed to .git/hooks/post-merge by bootstrap.sh
+# =============================================================================
+
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+
+# Re-symlink if any tracked config files changed
+CHANGED_FILES=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD 2>/dev/null || echo "")
+
+CONFIG_DIRS="zsh/ git/ ssh/ claude/ vscode/ macos/"
+
+for dir in $CONFIG_DIRS; do
+  if echo "$CHANGED_FILES" | grep -q "^$dir"; then
+    echo "▶ Config files changed — refreshing symlinks..."
+    bash "$DOTFILES_DIR/scripts/symlink.sh"
+    break
+  fi
+done
+
+# Re-chmod bin/ if any scripts changed
+if echo "$CHANGED_FILES" | grep -q "^bin/\|^sync/\|^scripts/"; then
+  find "$DOTFILES_DIR/bin" "$DOTFILES_DIR/sync" "$DOTFILES_DIR/scripts" \
+    -type f ! -name "*.md" -exec chmod +x {} \; 2>/dev/null || true
+fi

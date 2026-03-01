@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# cppath — Copy absolute path of a file/dir to clipboard
+# Usage: cppath [file]  (defaults to current directory)
+set -euo pipefail
+
+if [[ "${1:-}" == "--help" ]]; then
+  echo "Usage: cppath [file_or_dir]"
+  echo "Copies the absolute path to clipboard. Defaults to current directory."
+  exit 0
+fi
+
+TARGET="${1:-.}"
+ABS_PATH=$(realpath "$TARGET" 2>/dev/null || python3 -c "import os,sys; print(os.path.abspath(sys.argv[1]))" "$TARGET")
+echo -n "$ABS_PATH" | pbcopy
+echo "✓ Copied to clipboard: $ABS_PATH"

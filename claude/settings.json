@@ -1,0 +1,37 @@
+{
+  // Claude Code / Cowork global settings
+  // Symlinked to ~/.claude/settings.json
+
+  "theme": "dark",
+  "notifications": true,
+
+  "permissions": {
+    // Tools Claude can use without asking each time
+    "allow": [
+      "Bash(git:*)",
+      "Bash(brew:*)",
+      "Bash(mise:*)",
+      "Bash(gh:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(chmod:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(code:*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)"
+    ],
+    // Always ask before these
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(sudo rm:*)",
+      "Bash(curl * | bash:*)"
+    ]
+  }
+}

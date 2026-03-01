@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# ghealthcheck — Git repo health check
+set -euo pipefail
+[[ "${1:-}" == "--help" ]] && { echo "Usage: ghealthcheck"; echo "Checks git status, stash, unpushed branches, and large files."; exit 0; }
+git rev-parse --is-inside-work-tree &>/dev/null || { echo "✗ Not a git repo"; exit 1; }
+echo "▶ Git Health Check: $(basename "$(git rev-parse --show-toplevel)")"
+echo ""
+echo "── Status ───────────────────────────────"
+git status -sb
+echo ""
+echo "── Stashes ──────────────────────────────"
+STASHES=$(git stash list | wc -l | tr -d ' ')
+[[ "$STASHES" -gt 0 ]] && git stash list || echo "  No stashes"
+echo ""
+echo "── Unpushed branches ────────────────────"
+git branch -vv | grep -E 'ahead|gone' || echo "  All branches up to date"
+echo ""
+echo "── Large files (>1MB tracked) ───────────"
+git ls-files | xargs -I {} sh -c 'test -f "{}" && du -sh "{}"' 2>/dev/null \
+  | awk '$1 ~ /[0-9]+M/ || $1 ~ /[0-9]+G/' | sort -rh | head -10 \
+  || echo "  No large files found"
+echo ""
+echo "✓ Health check complete"

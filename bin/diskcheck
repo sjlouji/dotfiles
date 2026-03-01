@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# diskcheck — Show disk usage summary with warnings
+[[ "${1:-}" == "--help" ]] && { echo "Usage: diskcheck"; echo "Shows disk usage and largest directories in home."; exit 0; }
+echo "▶ Disk usage:"
+df -h | grep -E "^/dev|Filesystem" | awk '{printf "  %-30s %s used of %s (%s)\n", $9, $3, $2, $5}'
+echo ""
+echo "▶ Largest directories in ~:"
+du -sh ~/* 2>/dev/null | sort -rh | head -10 | while read -r size dir; do
+  printf "  %8s  %s\n" "$size" "$dir"
+done
+echo ""
+USAGE=$(df -h / | awk 'NR==2 {gsub(/%/,"",$5); print $5}')
+if [[ "$USAGE" -gt 85 ]]; then
+  echo "⚠ WARNING: Disk is ${USAGE}% full!"
+else
+  echo "✓ Disk is ${USAGE}% full — OK"
+fi

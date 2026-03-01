@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# trash — Safe rm: moves files to ~/.Trash instead of deleting permanently
+# Usage: trash file1 file2 ...
+set -euo pipefail
+
+if [[ "${1:-}" == "--help" || $# -eq 0 ]]; then
+  echo "Usage: trash <file> [file2 ...]"
+  echo "Moves files to ~/.Trash instead of deleting permanently."
+  exit 0
+fi
+
+TRASH_DIR="$HOME/.Trash"
+mkdir -p "$TRASH_DIR"
+for f in "$@"; do
+  [[ -e "$f" || -L "$f" ]] || { echo "⚠ Not found: $f"; continue; }
+  BASENAME=$(basename "$f")
+  DEST="$TRASH_DIR/$BASENAME"
+  # Avoid collision
+  if [[ -e "$DEST" ]]; then
+    DEST="$TRASH_DIR/${BASENAME%.*}_$(date +%H%M%S).${BASENAME##*.}"
+  fi
+  mv "$f" "$DEST"
+  echo "  → Trashed: $f"
+done

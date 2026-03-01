@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# flushdns — Flush macOS DNS cache
+[[ "${1:-}" == "--help" ]] && { echo "Usage: flushdns"; echo "Flushes the macOS DNS cache."; exit 0; }
+echo "▶ Flushing DNS cache..."
+sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder
+echo "✓ DNS cache flushed"

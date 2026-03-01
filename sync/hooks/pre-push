@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# =============================================================================
+# pre-push hook — Block accidental push of secrets or .local/ files
+# Installed to .git/hooks/pre-push by bootstrap.sh
+# =============================================================================
+
+set -euo pipefail
+
+RED='\033[0;31m'; YELLOW='\033[1;33m'; RESET='\033[0m'
+
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/.dotfiles}"
+
+# Patterns that should never be committed
+BLOCKED_PATTERNS=(
+  "\.local/"
+  "\.env"
+  "\.pem"
+  "\.key"
+  "_rsa$"
+  "_ed25519$"
+  "machine\.sh"
+  "\.gitconfig-work"
+  "\.gitconfig-personal"
+  "Brewfile\.local"
+  "\.zshrc\.local"
+  "password"
+  "secret"
+  "token"
+  "credential"
+)
+
+echo "▶ pre-push: scanning for sensitive files..."
+
+# Check staged files in the commits about to be pushed
+COMMITS=$(git log @{u}..HEAD --format="%H" 2>/dev/null || git log HEAD~1..HEAD --format="%H")
+
+FOUND_ISSUES=false
+
+for commit in $COMMITS; do
+  FILES=$(git show --name-only --format="" "$commit" 2>/dev/null || true)
+  for pattern in "${BLOCKED_PATTERNS[@]}"; do
+    MATCHES=$(echo "$FILES" | grep -iE "$pattern" || true)
+    if [[ -n "$MATCHES" ]]; then
+      echo -e "${RED}✗ BLOCKED: Commit $commit contains potentially sensitive file(s):${RESET}"
+      echo "$MATCHES" | while read -r f; do
+        echo -e "  ${YELLOW}$f${RESET}"
+      done
+      FOUND_ISSUES=true
+    fi
+  done
+done
+
+if [[ "$FOUND_ISSUES" == "true" ]]; then
+  echo ""
+  echo -e "${RED}Push blocked. Remove sensitive files from commits before pushing.${RESET}"
+  echo "  Tip: use 'git rebase -i' to edit/remove offending commits"
+  exit 1
+fi
+
+echo "  ✓ No sensitive files detected"
+exit 0

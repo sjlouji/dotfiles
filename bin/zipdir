@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# zipdir — Zip a directory with a timestamp
+# Usage: zipdir ./my-folder
+set -euo pipefail
+
+if [[ "${1:-}" == "--help" || -z "${1:-}" ]]; then
+  echo "Usage: zipdir <directory>"
+  echo "Creates a timestamped zip: dirname_YYYYMMDD.zip"
+  exit 0
+fi
+
+SRC="${1%/}"
+[[ -d "$SRC" ]] || { echo "✗ Not a directory: $SRC"; exit 1; }
+BASENAME=$(basename "$SRC")
+OUTFILE="${BASENAME}_$(date +%Y%m%d).zip"
+zip -r "$OUTFILE" "$SRC" -x "*.DS_Store" -x "*__pycache__*" -x "*.git*"
+SIZE=$(du -sh "$OUTFILE" | cut -f1)
+echo "✓ Created: $OUTFILE ($SIZE)"

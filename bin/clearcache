@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# clearcache — Clear common development caches
+set -euo pipefail
+[[ "${1:-}" == "--help" ]] && { echo "Usage: clearcache [--dry-run]"; echo "Clears npm, yarn, pip, brew, and macOS caches."; exit 0; }
+DRY="${1:-}"
+run() { echo "  → $*"; [[ "$DRY" != "--dry-run" ]] && eval "$*" || true; }
+[[ "$DRY" == "--dry-run" ]] && echo "▶ DRY RUN — nothing will be deleted"
+echo "▶ Clearing caches..."
+command -v npm &>/dev/null && run "npm cache clean --force 2>/dev/null"
+command -v yarn &>/dev/null && run "yarn cache clean 2>/dev/null"
+command -v pip3 &>/dev/null && run "pip3 cache purge 2>/dev/null"
+command -v brew &>/dev/null && run "brew cleanup --prune=all 2>/dev/null"
+run "rm -rf ~/Library/Caches/com.apple.dt.Xcode 2>/dev/null"
+run "rm -rf ~/Library/Developer/Xcode/DerivedData 2>/dev/null"
+FREED=$(du -sh ~/Library/Caches 2>/dev/null | cut -f1 || echo "unknown")
+echo "✓ Caches cleared. ~/Library/Caches is now ~$FREED"
