@@ -3,11 +3,6 @@
 # Install everything: brew bundle --file=Brewfile
 # =============================================================================
 
-# ── Taps ──────────────────────────────────────────────────────────────────────
-tap "homebrew/bundle"
-tap "homebrew/cask-fonts"
-tap "supabase/tap"
-
 # ── CLI Essentials ────────────────────────────────────────────────────────────
 brew "git"              # version control
 brew "gh"               # GitHub CLI — create PRs, manage issues from terminal
@@ -56,9 +51,6 @@ brew "switchaudio-osx"  # switch audio output devices from terminal
 
 # Editors & Terminals
 cask "visual-studio-code"           # primary editor
-
-# Containers & Local Dev
-cask "orbstack"                     # lightweight Docker + Linux VMs (replaces Docker Desktop)
 
 # Design & Product
 cask "figma"                        # UI/UX design — essential for product work
